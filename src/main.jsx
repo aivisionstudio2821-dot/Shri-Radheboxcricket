@@ -211,6 +211,7 @@ function App() {
   <circle cx="18" cy="6" r="1" fill="currentColor" stroke="none" />
 </svg>
 FOLLOW ON INSTAGRAM
+          </a>
         </div>
       </section>
 
