@@ -15,7 +15,6 @@ function RadheCinematicBall() {
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", update);
-    <RadheCinematicBall />
     return () => {
       clearTimeout(t);
       window.removeEventListener("scroll", onScroll);
@@ -471,7 +470,9 @@ Price: ₹${selectedSlot?.price}
   ];
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#0D0917] text-white">
+    <>
+      <RadheCinematicBall />
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#0D0917] text-white">
       {/* NAVBAR */}
 
       <nav className="radhe-nav fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#0D0917]/95 backdrop-blur-xl">
@@ -1032,7 +1033,8 @@ Price: ₹${selectedSlot?.price}
       {showGame && (
         <SecretCricketMode onClose={() => setShowGame(false)} />
       )}
-    </div>
+      </div>
+    </>
   );
 }
 
