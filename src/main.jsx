@@ -8,6 +8,7 @@ import {
   Clock3,
   MapPin,
   Menu,
+  Phone,
   ShieldCheck,
   Sparkles,
   Trophy,
@@ -15,8 +16,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import "./index.css";
 import { createClient } from "@supabase/supabase-js";
+import "./index.css";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -28,66 +29,76 @@ const supabase =
 
 const ADMIN_KEY = "radheAdminLogged";
 
-const ORANGE = "orange-500";
+const LOCATION_URL =
+  "https://www.google.com/search?rlz=1C1YTUH_enIN1016IN1016&sca_esv=9c0ea2fc79e91fa8&cs=0&output=search&kgmid=/g/11yrzb6nk5&q=Radhe+farm&shem=dlvs1,epsd1,esd2e,ltae,rimspwouoe,sdpie&shndl=30&source=sh/x/loc/uni/m1/1&kgs=f8e38dec6d960644&utm_source=dlvs1,epsd1,esd2e,ltae,rimspwouoe,sdpie,sh/x/loc/uni/m1/1";
+
+const PHONE = "7046706848";
+const OWNER = "Ankit";
+
+const QR_URL = `https://quickchart.io/qr?text=${encodeURIComponent(
+  LOCATION_URL
+)}&size=300&margin=2`;
+
+/* =========================
+   SLOT SYSTEM
+========================= */
 
 const formatHour = (hour) => {
   const suffix = hour >= 12 ? "PM" : "AM";
-  const h = hour % 12 || 12;
-  return `${String(h).padStart(2, "0")}:00 ${suffix}`;
+  const displayHour = hour % 12 || 12;
+  return `${String(displayHour).padStart(2, "0")}:00 ${suffix}`;
 };
 
 const SLOT_OPTIONS = Array.from({ length: 18 }, (_, index) => {
-  const startHour = index + 6;
-  const endHour = startHour + 1;
+  const start = index + 6;
+  const end = start + 1;
 
   return {
-    value: `${formatHour(startHour)} - ${formatHour(endHour === 24 ? 0 : endHour)}`,
-    price: startHour < 17 ? 800 : 1100,
-    type: startHour < 17 ? "DAY" : "NIGHT",
+    value: `${formatHour(start)} - ${formatHour(end === 24 ? 0 : end)}`,
+    price: start < 17 ? 800 : 1100,
+    type: start < 17 ? "DAY" : "NIGHT",
   };
 });
 
 function formatDate(date) {
   if (!date) return "";
 
-  const d = new Date(`${date}T00:00:00`);
-
-  return d.toLocaleDateString("en-IN", {
+  return new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
 }
 
-/* =========================================================
-   SECRET CRICKET MODE
-========================================================= */
+/* =========================
+   SECRET CRICKET GAME
+========================= */
 
 function SecretCricketMode({ onClose }) {
   const [ball, setBall] = useState(1);
   const [score, setScore] = useState(0);
   const [message, setMessage] = useState("TIME YOUR SWING");
   const [running, setRunning] = useState(false);
-  const [ballPosition, setBallPosition] = useState(10);
+  const [position, setPosition] = useState(10);
   const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
     if (!running || gameOver) return;
 
-    const interval = setInterval(() => {
-      setBallPosition((prev) => (prev >= 92 ? 8 : prev + 4));
+    const timer = setInterval(() => {
+      setPosition((prev) => (prev >= 92 ? 8 : prev + 4));
     }, 80);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, [running, gameOver]);
 
   const startGame = () => {
-    setRunning(true);
-    setGameOver(false);
     setBall(1);
     setScore(0);
+    setPosition(10);
     setMessage("SWING!");
-    setBallPosition(10);
+    setRunning(true);
+    setGameOver(false);
   };
 
   const swing = () => {
@@ -96,20 +107,20 @@ function SecretCricketMode({ onClose }) {
       return;
     }
 
-    const distance = Math.abs(ballPosition - 50);
+    const distance = Math.abs(position - 50);
 
-    let result = "WICKET! 💀";
     let runs = 0;
+    let result = "WICKET! 💀";
 
     if (distance <= 2) {
-      result = "SIX! 🚀";
       runs = 6;
+      result = "SIX! 🚀";
     } else if (distance <= 10) {
-      result = "FOUR! 🔥";
       runs = 4;
+      result = "FOUR! 🔥";
     } else if (distance <= 20) {
-      result = "ONE RUN";
       runs = 1;
+      result = "ONE RUN";
     }
 
     setScore((prev) => prev + runs);
@@ -120,12 +131,12 @@ function SecretCricketMode({ onClose }) {
       setGameOver(true);
     } else {
       setBall((prev) => prev + 1);
-      setBallPosition(10);
+      setPosition(10);
     }
   };
 
   useEffect(() => {
-    const keyHandler = (e) => {
+    const handler = (e) => {
       if (
         (e.code === "Space" || e.code === "Enter") &&
         running &&
@@ -136,36 +147,32 @@ function SecretCricketMode({ onClose }) {
       }
     };
 
-    window.addEventListener("keydown", keyHandler);
+    window.addEventListener("keydown", handler);
 
-    return () => window.removeEventListener("keydown", keyHandler);
-  }, [running, gameOver, ballPosition, ball]);
+    return () => window.removeEventListener("keydown", handler);
+  }, [running, gameOver, position, ball]);
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 p-4">
-      <div className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-orange-500/30 bg-[#100c09] p-6 shadow-2xl shadow-orange-500/10">
+      <div className="relative w-full max-w-xl rounded-3xl border border-orange-500/30 bg-[#100c09] p-6 shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full border border-white/10 p-2 text-white/60 hover:bg-white/10 hover:text-white"
+          className="absolute right-4 top-4 rounded-full border border-white/10 p-2 text-white/60 hover:bg-white/10"
         >
           <X size={20} />
         </button>
 
         <div className="mb-8 text-center">
-          <div className="mb-2 text-xs font-bold uppercase tracking-[0.35em] text-orange-400">
+          <div className="text-xs font-bold uppercase tracking-[0.35em] text-orange-400">
             Secret Mode
           </div>
 
-          <h2 className="text-4xl font-black uppercase italic">
+          <h2 className="mt-2 text-4xl font-black uppercase italic">
             Cricket <span className="text-orange-500">Mode</span>
           </h2>
-
-          <p className="mt-2 text-sm text-white/50">
-            6 balls. Time your swing. Beat the score.
-          </p>
         </div>
 
-        <div className="mb-5 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <div className="mb-5 flex justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-5">
           <div>
             <div className="text-xs uppercase tracking-widest text-white/40">
               Score
@@ -179,58 +186,46 @@ function SecretCricketMode({ onClose }) {
             <div className="text-xs uppercase tracking-widest text-white/40">
               Ball
             </div>
-            <div className="text-2xl font-bold">
-              {gameOver ? "6/6" : `${ball}/6`}
-            </div>
+            <div className="text-2xl font-black">{ball}/6</div>
           </div>
         </div>
 
-        <div className="relative mb-6 h-28 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-[#251710] to-[#090807]">
+        <div className="relative mb-6 h-28 overflow-hidden rounded-2xl border border-white/10 bg-[#21150d]">
           <div className="absolute left-1/2 top-0 h-full w-px bg-orange-500/30" />
 
-          <div className="absolute bottom-5 left-0 right-0 h-1 bg-white/10" />
-
           <div
-            className="absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-red-500 shadow-lg shadow-red-500/40"
-            style={{ left: `${ballPosition}%` }}
+            className="absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-red-500 shadow-lg"
+            style={{ left: `${position}%` }}
           />
-
-          <div className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-orange-500/20" />
         </div>
 
-        <div className="mb-6 text-center">
-          <div className="text-2xl font-black uppercase italic">
-            {message}
-          </div>
-
-          <div className="mt-2 text-xs text-white/40">
-            Aim for the center zone
-          </div>
+        <div className="mb-6 text-center text-2xl font-black uppercase italic">
+          {message}
         </div>
 
         <button
           onClick={swing}
-          className="w-full rounded-2xl bg-orange-500 py-4 text-lg font-black uppercase tracking-widest text-black hover:bg-orange-400"
+          className="w-full rounded-2xl bg-orange-500 py-4 font-black tracking-widest text-black hover:bg-orange-400"
         >
           {gameOver ? "PLAY AGAIN" : running ? "SWING" : "START GAME"}
         </button>
 
         <div className="mt-4 text-center text-xs text-white/30">
-          Keyboard: SPACE / ENTER
+          SPACE / ENTER
         </div>
       </div>
     </div>
   );
 }
 
-/* =========================================================
-   MAIN WEBSITE
-========================================================= */
+/* =========================
+   MAIN APP
+========================= */
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoTaps, setLogoTaps] = useState(0);
-  const [showCricketMode, setShowCricketMode] = useState(false);
+  const [showGame, setShowGame] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -240,17 +235,17 @@ function App() {
     players: "",
   });
 
-  const [bookingLoading, setBookingLoading] = useState(false);
-  const [bookingMessage, setBookingMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const selectedSlot = useMemo(
-    () => SLOT_OPTIONS.find((item) => item.value === form.slot),
+    () => SLOT_OPTIONS.find((slot) => slot.value === form.slot),
     [form.slot]
   );
 
   useEffect(() => {
     if (logoTaps >= 5) {
-      setShowCricketMode(true);
+      setShowGame(true);
       setLogoTaps(0);
     }
   }, [logoTaps]);
@@ -261,46 +256,42 @@ function App() {
       [key]: value,
     }));
 
-    setBookingMessage("");
+    setMessage("");
   };
 
-  const submitBooking = async (event) => {
-    event.preventDefault();
-    setBookingMessage("");
+  const submitBooking = async (e) => {
+    e.preventDefault();
+    setMessage("");
 
     if (!supabase) {
-      setBookingMessage(
-        "Booking system is not connected yet. Please try again shortly."
-      );
+      setMessage("Booking system is not connected.");
       return;
     }
 
     if (!form.name || !form.phone || !form.date || !form.slot) {
-      setBookingMessage("Please fill all required details.");
+      setMessage("Please fill all required details.");
       return;
     }
 
     if (form.phone.replace(/\D/g, "").length < 10) {
-      setBookingMessage("Please enter a valid 10-digit phone number.");
+      setMessage("Please enter a valid 10-digit phone number.");
       return;
     }
 
-    setBookingLoading(true);
+    setLoading(true);
 
     try {
-      const { data: existingBookings, error: checkError } = await supabase
+      const { data: existing, error: checkError } = await supabase
         .from("bookings")
-        .select("id, date, slot, status")
+        .select("id")
         .eq("date", form.date)
         .eq("slot", form.slot)
         .neq("status", "Rejected");
 
       if (checkError) throw checkError;
 
-      if (existingBookings?.length) {
-        setBookingMessage(
-          "This slot is already booked. Please choose another slot."
-        );
+      if (existing?.length) {
+        setMessage("This slot is already booked. Choose another slot.");
         return;
       }
 
@@ -317,6 +308,10 @@ function App() {
 
       if (error) throw error;
 
+      setMessage(
+        `Booking request submitted! ₹${selectedSlot?.price} ${selectedSlot?.type?.toLowerCase()} slot selected.`
+      );
+
       setForm({
         name: "",
         phone: "",
@@ -324,17 +319,11 @@ function App() {
         slot: "",
         players: "",
       });
-
-      setBookingMessage(
-        `Booking request submitted! Your selected ${selectedSlot?.type?.toLowerCase() || ""} slot is ₹${selectedSlot?.price || ""}. Team will confirm shortly.`
-      );
     } catch (error) {
       console.error(error);
-      setBookingMessage(
-        "Something went wrong while submitting your booking. Please try again."
-      );
+      setMessage("Something went wrong. Please try again.");
     } finally {
-      setBookingLoading(false);
+      setLoading(false);
     }
   };
 
@@ -342,35 +331,36 @@ function App() {
     {
       icon: Trophy,
       title: "Premium Turf",
-      text: "Professional box cricket turf built for competitive gameplay.",
+      text: "Professional box cricket turf for competitive gameplay.",
     },
     {
       icon: Zap,
       title: "Power Lighting",
-      text: "Bright floodlights for smooth evening and night matches.",
+      text: "Bright lighting for evening and night matches.",
     },
     {
       icon: Users,
       title: "Team Ready",
-      text: "Perfect setup for friends, teams, tournaments and practice.",
+      text: "Perfect for friends, teams, tournaments and practice.",
     },
     {
       icon: ShieldCheck,
       title: "Safe & Clean",
-      text: "Well-maintained playing area with a clean environment.",
+      text: "Clean and maintained playing environment.",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#080807] text-white">
+    <div className="min-h-screen bg-[#080706] text-white">
       {/* NAVBAR */}
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#080807]/90 backdrop-blur-xl">
+
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#080706]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <button
             onClick={() => setLogoTaps((prev) => prev + 1)}
-            className="group flex items-center gap-3 text-left"
+            className="flex items-center gap-3"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 text-black shadow-lg shadow-orange-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 text-black">
               <Trophy size={22} />
             </div>
 
@@ -378,6 +368,7 @@ function App() {
               <div className="text-sm font-black tracking-[0.15em]">
                 RADHE
               </div>
+
               <div className="text-[10px] font-bold tracking-[0.3em] text-orange-400">
                 BOX CRICKET
               </div>
@@ -406,7 +397,7 @@ function App() {
           </div>
 
           <button
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => setMenuOpen((prev) => !prev)}
             className="rounded-xl border border-white/10 p-2 md:hidden"
           >
             {menuOpen ? <X /> : <Menu />}
@@ -434,60 +425,60 @@ function App() {
       </nav>
 
       {/* HERO */}
+
       <section
         id="home"
         className="relative flex min-h-screen items-center overflow-hidden pt-24"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(249,115,22,0.14),transparent_35%),radial-gradient(circle_at_20%_70%,rgba(234,88,12,0.07),transparent_30%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(249,115,22,0.15),transparent_35%)]" />
 
         <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:px-8">
           <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-orange-400">
               <Sparkles size={14} />
-              Ahmedabad's Box Cricket
+              Radhe Farm • Ahmedabad
             </div>
 
-            <h1 className="max-w-4xl text-6xl font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
+            <h1 className="text-6xl font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
               PLAY HARD.
               <br />
               PLAY <span className="text-orange-500">RADHE.</span>
             </h1>
 
             <p className="mt-7 max-w-xl text-lg leading-8 text-white/55">
-              Your next match starts here. Premium box cricket turf, powerful
-              lighting and an atmosphere made for the game.
+              Premium box cricket at Radhe Farm. Book your one-hour slot and
+              bring your team to the game.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <a
                 href="#booking"
-                className="group inline-flex items-center justify-center gap-3 rounded-xl bg-orange-500 px-7 py-4 font-black text-black hover:bg-orange-400"
+                className="inline-flex items-center justify-center gap-3 rounded-xl bg-orange-500 px-7 py-4 font-black text-black hover:bg-orange-400"
               >
                 BOOK YOUR SLOT
-                <ArrowRight
-                  size={19}
-                  className="transition group-hover:translate-x-1"
-                />
+                <ArrowRight size={19} />
               </a>
 
               <a
-                href="#facilities"
-                className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-7 py-4 font-bold hover:bg-white/[0.07]"
+                href={LOCATION_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-7 py-4 font-bold hover:bg-white/5"
               >
-                EXPLORE FACILITIES
+                <MapPin size={18} />
+                GET DIRECTIONS
               </a>
             </div>
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-8 rounded-[40px] bg-orange-500/5 blur-3xl" />
-
-            <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-[#18110c] to-[#080807] p-8 shadow-2xl">
+            <div className="rounded-[32px] border border-white/10 bg-[#110d09] p-8 shadow-2xl">
               <div className="mb-12 flex items-center justify-between">
                 <div>
                   <div className="text-xs font-bold uppercase tracking-[0.3em] text-white/30">
-                    RADHE
+                    RADHE FARM
                   </div>
+
                   <div className="mt-1 text-2xl font-black uppercase italic">
                     GAME ON
                   </div>
@@ -497,25 +488,10 @@ function App() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {[
-                  ["6+", "Players"],
-                  ["18", "Daily Slots"],
-                  ["₹800", "Day"],
-                  ["₹1100", "Night"],
-                ].map(([number, label]) => (
-                  <div
-                    key={label}
-                    className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
-                  >
-                    <div className="text-3xl font-black text-orange-500">
-                      {number}
-                    </div>
-
-                    <div className="mt-1 text-xs uppercase tracking-widest text-white/35">
-                      {label}
-                    </div>
-                  </div>
-                ))}
+                <Stat value="18" label="Daily Slots" />
+                <Stat value="1 HR" label="Each Slot" />
+                <Stat value="₹800" label="Day" />
+                <Stat value="₹1100" label="Night" />
               </div>
 
               <div className="mt-4 rounded-2xl border border-orange-500/10 bg-orange-500/5 p-5">
@@ -532,6 +508,7 @@ function App() {
       </section>
 
       {/* ABOUT */}
+
       <section id="about" className="border-t border-white/5 py-24">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2">
@@ -549,15 +526,12 @@ function App() {
 
             <div className="text-white/55">
               <p className="text-lg leading-8">
-                Radhe Box Cricket is built for people who love the game.
-                Whether you're here for a serious match, a weekend battle with
-                friends, or just some practice, we've created a space where
-                every ball feels exciting.
+                Radhe Box Cricket at Radhe Farm is made for teams, friends,
+                tournaments and anyone who loves cricket.
               </p>
 
               <p className="mt-5 leading-7">
-                Come with your team. Pick your slot. Step onto the turf and let
-                the game begin.
+                Pick your slot, bring your squad and let the game begin.
               </p>
             </div>
           </div>
@@ -565,6 +539,7 @@ function App() {
       </section>
 
       {/* FACILITIES */}
+
       <section
         id="facilities"
         className="border-t border-white/5 bg-white/[0.015] py-24"
@@ -587,9 +562,9 @@ function App() {
               return (
                 <div
                   key={item.title}
-                  className="group rounded-3xl border border-white/10 bg-[#0b0908] p-7 transition hover:-translate-y-1 hover:border-orange-500/30"
+                  className="group rounded-3xl border border-white/10 bg-[#0c0907] p-7 hover:border-orange-500/30"
                 >
-                  <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-500 transition group-hover:bg-orange-500 group-hover:text-black">
+                  <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-black">
                     <Icon size={23} />
                   </div>
 
@@ -608,6 +583,7 @@ function App() {
       </section>
 
       {/* BOOKING */}
+
       <section id="booking" className="border-t border-white/5 py-24">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
@@ -623,56 +599,33 @@ function App() {
               </h2>
 
               <p className="mt-6 max-w-md leading-7 text-white/45">
-                Choose your date and one-hour slot. Day slots are ₹800 and
+                Choose a date and one-hour slot. Day slots are ₹800 and
                 evening/night slots are ₹1100.
               </p>
 
-              <div className="mt-8 space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-xl bg-orange-500/10 p-3 text-orange-500">
-                    <CalendarDays size={20} />
-                  </div>
+              <div className="mt-8 grid grid-cols-2 gap-3">
+                <PriceCard
+                  title="DAY"
+                  price="₹800"
+                  time="06 AM – 05 PM"
+                />
 
-                  <div>
-                    <div className="font-bold">18 Daily Slots</div>
-                    <div className="text-sm text-white/40">
-                      6 AM to midnight
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="rounded-xl bg-orange-500/10 p-3 text-orange-500">
-                    <Clock3 size={20} />
-                  </div>
-
-                  <div>
-                    <div className="font-bold">1 Hour Booking</div>
-                    <div className="text-sm text-white/40">
-                      ₹800 day • ₹1100 night
-                    </div>
-                  </div>
-                </div>
+                <PriceCard
+                  title="NIGHT"
+                  price="₹1100"
+                  time="05 PM – 12 AM"
+                />
               </div>
 
-              <div className="mt-8 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4">
-                  <div className="text-xs font-bold uppercase tracking-widest text-orange-400">
-                    DAY
-                  </div>
-                  <div className="mt-1 text-2xl font-black">₹800</div>
-                  <div className="mt-1 text-xs text-white/40">
-                    6 AM – 5 PM
-                  </div>
-                </div>
+              <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                <div className="flex items-center gap-3">
+                  <Clock3 className="text-orange-500" size={20} />
 
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                  <div className="text-xs font-bold uppercase tracking-widest text-white/40">
-                    NIGHT
-                  </div>
-                  <div className="mt-1 text-2xl font-black">₹1100</div>
-                  <div className="mt-1 text-xs text-white/40">
-                    5 PM – 12 AM
+                  <div>
+                    <div className="font-bold">18 one-hour slots</div>
+                    <div className="text-sm text-white/40">
+                      06:00 AM to 12:00 AM
+                    </div>
                   </div>
                 </div>
               </div>
@@ -680,39 +633,24 @@ function App() {
 
             <form
               onSubmit={submitBooking}
-              className="rounded-3xl border border-white/10 bg-[#0b0908] p-6 sm:p-8"
+              className="rounded-3xl border border-white/10 bg-[#0c0907] p-6 sm:p-8"
             >
               <div className="grid gap-5 sm:grid-cols-2">
-                {/* NAME */}
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
-                    Name *
-                  </label>
+                <Input
+                  label="Name *"
+                  value={form.name}
+                  onChange={(value) => updateForm("name", value)}
+                  placeholder="Your name"
+                />
 
-                  <input
-                    value={form.name}
-                    onChange={(e) => updateForm("name", e.target.value)}
-                    placeholder="Your name"
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-white outline-none placeholder:text-white/20 focus:border-orange-500/60"
-                  />
-                </div>
+                <Input
+                  label="Phone *"
+                  value={form.phone}
+                  onChange={(value) => updateForm("phone", value)}
+                  placeholder="10-digit number"
+                  type="tel"
+                />
 
-                {/* PHONE */}
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
-                    Phone *
-                  </label>
-
-                  <input
-                    value={form.phone}
-                    onChange={(e) => updateForm("phone", e.target.value)}
-                    placeholder="10-digit number"
-                    inputMode="numeric"
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-white outline-none placeholder:text-white/20 focus:border-orange-500/60"
-                  />
-                </div>
-
-                {/* DATE */}
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
                     Date *
@@ -720,31 +658,21 @@ function App() {
 
                   <input
                     type="date"
-                    value={form.date}
                     min={new Date().toISOString().split("T")[0]}
+                    value={form.date}
                     onChange={(e) => updateForm("date", e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-white outline-none focus:border-orange-500/60"
+                    className="w-full rounded-xl border border-white/10 bg-[#11100e] px-4 py-4 text-white outline-none focus:border-orange-500"
                   />
                 </div>
 
-                {/* PLAYERS */}
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
-                    Players
-                  </label>
+                <Input
+                  label="Players"
+                  value={form.players}
+                  onChange={(value) => updateForm("players", value)}
+                  placeholder="e.g. 10"
+                  type="number"
+                />
 
-                  <input
-                    type="number"
-                    min="1"
-                    max="30"
-                    value={form.players}
-                    onChange={(e) => updateForm("players", e.target.value)}
-                    placeholder="e.g. 10"
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-white outline-none placeholder:text-white/20 focus:border-orange-500/60"
-                  />
-                </div>
-
-                {/* SLOT */}
                 <div className="sm:col-span-2">
                   <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
                     Select Slot *
@@ -754,7 +682,7 @@ function App() {
                     <select
                       value={form.slot}
                       onChange={(e) => updateForm("slot", e.target.value)}
-                      className="w-full appearance-none rounded-xl border border-white/10 bg-[#11100e] px-4 py-4 pr-12 text-white outline-none focus:border-orange-500/60"
+                      className="w-full appearance-none rounded-xl border border-white/10 bg-[#11100e] px-4 py-4 pr-12 text-white outline-none focus:border-orange-500"
                     >
                       <option value="" className="bg-[#11100e] text-white">
                         Select your slot
@@ -779,7 +707,6 @@ function App() {
                 </div>
               </div>
 
-              {/* SELECTED SLOT PRICE */}
               {selectedSlot && (
                 <div className="mt-5 flex items-center justify-between rounded-2xl border border-orange-500/20 bg-orange-500/5 p-5">
                   <div>
@@ -800,7 +727,7 @@ function App() {
 
                   <div className="text-right">
                     <div className="text-xs uppercase tracking-widest text-white/30">
-                      Price
+                      PRICE
                     </div>
 
                     <div className="text-3xl font-black text-orange-500">
@@ -810,24 +737,18 @@ function App() {
                 </div>
               )}
 
-              {bookingMessage && (
-                <div
-                  className={`mt-5 rounded-xl border p-4 text-sm ${
-                    bookingMessage.includes("submitted")
-                      ? "border-orange-500/20 bg-orange-500/5 text-orange-300"
-                      : "border-red-400/20 bg-red-400/5 text-red-300"
-                  }`}
-                >
-                  {bookingMessage}
+              {message && (
+                <div className="mt-5 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-sm text-orange-300">
+                  {message}
                 </div>
               )}
 
               <button
                 type="submit"
-                disabled={bookingLoading}
-                className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-orange-500 px-6 py-4 font-black text-black hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={loading}
+                className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-orange-500 px-6 py-4 font-black text-black hover:bg-orange-400 disabled:opacity-50"
               >
-                {bookingLoading ? (
+                {loading ? (
                   "SUBMITTING..."
                 ) : (
                   <>
@@ -836,67 +757,129 @@ function App() {
                   </>
                 )}
               </button>
-
-              <p className="mt-4 text-center text-xs text-white/25">
-                Your booking request will be reviewed by the Radhe Box Cricket
-                team.
-              </p>
             </form>
           </div>
         </div>
       </section>
 
-      {/* CONTACT */}
+      {/* LOCATION */}
+
       <section
         id="contact"
-        className="border-t border-white/5 bg-white/[0.015] py-20"
+        className="border-t border-white/5 bg-[#0b0907] py-24"
       >
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="grid gap-5 sm:grid-cols-3">
-            <div className="rounded-3xl border border-white/10 bg-[#0b0908] p-7">
-              <MapPin className="mb-5 text-orange-500" />
-
-              <div className="text-xs font-bold uppercase tracking-widest text-white/30">
-                LOCATION
-              </div>
-
-              <div className="mt-2 font-bold">Ahmedabad, Gujarat</div>
+          <div className="mb-12">
+            <div className="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
+              FIND US
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-[#0b0908] p-7">
-              <Clock3 className="mb-5 text-orange-500" />
+            <h2 className="text-4xl font-black uppercase sm:text-5xl">
+              COME PLAY <span className="text-orange-500">WITH US.</span>
+            </h2>
+          </div>
 
-              <div className="text-xs font-bold uppercase tracking-widest text-white/30">
-                OPEN
-              </div>
+          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <a
+                href={`tel:${PHONE}`}
+                className="rounded-3xl border border-white/10 bg-[#100d0a] p-7 transition hover:border-orange-500/40"
+              >
+                <Phone className="mb-5 text-orange-500" size={26} />
 
-              <div className="mt-2 font-bold">06:00 AM – 12:00 AM</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-white/30">
+                  OWNER / CALL
+                </div>
+
+                <div className="mt-2 text-xl font-black">{OWNER}</div>
+
+                <div className="mt-1 text-orange-400">
+                  {PHONE}
+                </div>
+              </a>
+
+              <a
+                href={LOCATION_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-3xl border border-white/10 bg-[#100d0a] p-7 transition hover:border-orange-500/40"
+              >
+                <MapPin className="mb-5 text-orange-500" size={26} />
+
+                <div className="text-xs font-bold uppercase tracking-widest text-white/30">
+                  LOCATION
+                </div>
+
+                <div className="mt-2 text-xl font-black">
+                  Radhe Farm
+                </div>
+
+                <div className="mt-1 text-orange-400">
+                  Open in Google Maps →
+                </div>
+              </a>
+
+              <a
+                href="https://instagram.com/radhe_box_cricket"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-3xl border border-white/10 bg-[#100d0a] p-7 transition hover:border-orange-500/40 sm:col-span-2"
+              >
+                <Sparkles className="mb-5 text-orange-500" size={26} />
+
+                <div className="text-xs font-bold uppercase tracking-widest text-white/30">
+                  INSTAGRAM
+                </div>
+
+                <div className="mt-2 text-xl font-black">
+                  @radhe_box_cricket
+                </div>
+              </a>
             </div>
 
-            <a
-              href="https://instagram.com/radhe_box_cricket"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-3xl border border-white/10 bg-[#0b0908] p-7 hover:border-orange-500/30"
-            >
-              <Sparkles className="mb-5 text-orange-500" />
+            {/* LOCATION QR */}
 
-              <div className="text-xs font-bold uppercase tracking-widest text-white/30">
-                INSTAGRAM
+            <div className="rounded-3xl border border-orange-500/20 bg-[#100d0a] p-7 text-center">
+              <div className="text-xs font-bold uppercase tracking-[0.25em] text-orange-400">
+                SCAN FOR LOCATION
               </div>
 
-              <div className="mt-2 font-bold">@radhe_box_cricket</div>
-            </a>
+              <div className="mx-auto mt-5 flex w-fit rounded-2xl bg-white p-3">
+                <img
+                  src={QR_URL}
+                  alt="Radhe Farm Google Maps QR Code"
+                  className="h-52 w-52"
+                />
+              </div>
+
+              <div className="mt-5 font-black">
+                RADHE FARM
+              </div>
+
+              <a
+                href={LOCATION_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400"
+              >
+                <MapPin size={16} />
+                GET DIRECTIONS
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
+
       <footer className="border-t border-white/5 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 text-sm text-white/30 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 text-sm text-white/30 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <div>
-            © {new Date().getFullYear()} Radhe Box Cricket. All rights
-            reserved.
+            © {new Date().getFullYear()} Radhe Box Cricket • Radhe Farm
+          </div>
+
+          <div>
+            Owner: {OWNER} • {PHONE}
           </div>
 
           <a href="/admin" className="hover:text-orange-400">
@@ -905,16 +888,76 @@ function App() {
         </div>
       </footer>
 
-      {showCricketMode && (
-        <SecretCricketMode onClose={() => setShowCricketMode(false)} />
+      {showGame && (
+        <SecretCricketMode onClose={() => setShowGame(false)} />
       )}
     </div>
   );
 }
 
-/* =========================================================
-   ADMIN PANEL
-========================================================= */
+/* =========================
+   SMALL COMPONENTS
+========================= */
+
+function Input({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
+        {label}
+      </label>
+
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-xl border border-white/10 bg-[#11100e] px-4 py-4 text-white outline-none placeholder:text-white/20 focus:border-orange-500"
+      />
+    </div>
+  );
+}
+
+function PriceCard({ title, price, time }) {
+  return (
+    <div className="rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4">
+      <div className="text-xs font-bold uppercase tracking-widest text-orange-400">
+        {title}
+      </div>
+
+      <div className="mt-1 text-2xl font-black">
+        {price}
+      </div>
+
+      <div className="mt-1 text-xs text-white/40">
+        {time}
+      </div>
+    </div>
+  );
+}
+
+function Stat({ value, label }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+      <div className="text-3xl font-black text-orange-500">
+        {value}
+      </div>
+
+      <div className="mt-1 text-xs uppercase tracking-widest text-white/35">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+/* =========================
+   ADMIN
+========================= */
 
 function Admin() {
   const [loggedIn, setLoggedIn] = useState(
@@ -923,12 +966,12 @@ function Admin() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [loginError, setLoginError] = useState("");
 
   const loadBookings = async () => {
     if (!supabase) {
@@ -937,15 +980,14 @@ function Admin() {
     }
 
     setLoading(true);
-    setError("");
 
     try {
-      const { data, error: fetchError } = await supabase
+      const { data, error } = await supabase
         .from("bookings")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (fetchError) throw fetchError;
+      if (error) throw error;
 
       setBookings(data || []);
     } catch (err) {
@@ -960,18 +1002,20 @@ function Admin() {
     if (loggedIn) loadBookings();
   }, [loggedIn]);
 
-  const login = (event) => {
-    event.preventDefault();
+  const login = (e) => {
+    e.preventDefault();
     setLoginError("");
 
-    const validOwner =
-      email === "owner@radhebox.demo" && password === "radhe123";
+    const owner =
+      email === "owner@radhebox.demo" &&
+      password === "radhe123";
 
-    const validStaff =
-      email === "staff@radhebox.demo" && password === "staff123";
+    const staff =
+      email === "staff@radhebox.demo" &&
+      password === "staff123";
 
-    if (!validOwner && !validStaff) {
-      setLoginError("Invalid demo credentials.");
+    if (!owner && !staff) {
+      setLoginError("Invalid login details.");
       return;
     }
 
@@ -987,13 +1031,12 @@ function Admin() {
   const updateStatus = async (id, status) => {
     if (!supabase) return;
 
-    const { error: updateError } = await supabase
+    const { error } = await supabase
       .from("bookings")
       .update({ status })
       .eq("id", id);
 
-    if (updateError) {
-      console.error(updateError);
+    if (error) {
       setError("Could not update booking.");
       return;
     }
@@ -1004,17 +1047,14 @@ function Admin() {
   const deleteBooking = async (id) => {
     if (!supabase) return;
 
-    if (!window.confirm("Are you sure you want to delete this booking?")) {
-      return;
-    }
+    if (!window.confirm("Delete this booking?")) return;
 
-    const { error: deleteError } = await supabase
+    const { error } = await supabase
       .from("bookings")
       .delete()
       .eq("id", id);
 
-    if (deleteError) {
-      console.error(deleteError);
+    if (error) {
       setError("Could not delete booking.");
       return;
     }
@@ -1022,29 +1062,22 @@ function Admin() {
     loadBookings();
   };
 
-  const filteredBookings =
+  const filtered =
     filter === "All"
       ? bookings
-      : bookings.filter((booking) => booking.status === filter);
+      : bookings.filter((b) => b.status === filter);
 
-  const total = bookings.length;
-
-  const pending = bookings.filter(
-    (booking) => booking.status === "Pending"
-  ).length;
-
-  const approved = bookings.filter(
-    (booking) => booking.status === "Approved"
-  ).length;
-
-  const rejected = bookings.filter(
-    (booking) => booking.status === "Rejected"
-  ).length;
+  const stats = {
+    total: bookings.length,
+    pending: bookings.filter((b) => b.status === "Pending").length,
+    approved: bookings.filter((b) => b.status === "Approved").length,
+    rejected: bookings.filter((b) => b.status === "Rejected").length,
+  };
 
   if (!loggedIn) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#080807] px-5 text-white">
-        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0b0908] p-8 shadow-2xl">
+      <div className="flex min-h-screen items-center justify-center bg-[#080706] px-5 text-white">
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0c0907] p-8">
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500 text-black">
               <ShieldCheck size={28} />
@@ -1060,33 +1093,21 @@ function Admin() {
           </div>
 
           <form onSubmit={login} className="space-y-5">
-            <div>
-              <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
-                Email
-              </label>
+            <Input
+              label="Email"
+              value={email}
+              onChange={setEmail}
+              placeholder="owner@radhebox.demo"
+              type="email"
+            />
 
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-                placeholder="owner@radhebox.demo"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-white outline-none focus:border-orange-500/60"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
-                Password
-              </label>
-
-              <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                placeholder="••••••••"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-white outline-none focus:border-orange-500/60"
-              />
-            </div>
+            <Input
+              label="Password"
+              value={password}
+              onChange={setPassword}
+              placeholder="Password"
+              type="password"
+            />
 
             {loginError && (
               <div className="rounded-xl border border-red-400/20 bg-red-400/5 p-4 text-sm text-red-300">
@@ -1096,17 +1117,17 @@ function Admin() {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-orange-500 px-6 py-4 font-black text-black hover:bg-orange-400"
+              className="w-full rounded-xl bg-orange-500 py-4 font-black text-black hover:bg-orange-400"
             >
               LOGIN
             </button>
           </form>
 
           <div className="mt-6 rounded-xl border border-white/5 bg-white/[0.02] p-4 text-xs text-white/35">
-            <div className="font-bold text-white/50">Demo login</div>
-            <div className="mt-2">owner@radhebox.demo</div>
+            <div>owner@radhebox.demo</div>
             <div>radhe123</div>
-            <div className="mt-2">staff@radhebox.demo</div>
+            <br />
+            <div>staff@radhebox.demo</div>
             <div>staff123</div>
           </div>
         </div>
@@ -1115,8 +1136,8 @@ function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080807] text-white">
-      <header className="border-b border-white/10 bg-[#0b0908]">
+    <div className="min-h-screen bg-[#080706] text-white">
+      <header className="border-b border-white/10 bg-[#0c0907]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 lg:px-8">
           <div>
             <div className="text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
@@ -1128,17 +1149,17 @@ function Admin() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex gap-3">
             <button
               onClick={loadBookings}
-              className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold hover:bg-white/5"
+              className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold"
             >
               Refresh
             </button>
 
             <button
               onClick={logout}
-              className="rounded-xl bg-orange-500 px-4 py-3 text-sm font-black text-black hover:bg-orange-400"
+              className="rounded-xl bg-orange-500 px-4 py-3 text-sm font-black text-black"
             >
               Logout
             </button>
@@ -1148,29 +1169,14 @@ function Admin() {
 
       <main className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            ["Total", total],
-            ["Pending", pending],
-            ["Approved", approved],
-            ["Rejected", rejected],
-          ].map(([label, value]) => (
-            <div
-              key={label}
-              className="rounded-2xl border border-white/10 bg-[#0b0908] p-6"
-            >
-              <div className="text-xs font-bold uppercase tracking-widest text-white/30">
-                {label}
-              </div>
-
-              <div className="mt-2 text-4xl font-black text-orange-500">
-                {value}
-              </div>
-            </div>
-          ))}
+          <AdminStat title="Total" value={stats.total} />
+          <AdminStat title="Pending" value={stats.pending} />
+          <AdminStat title="Approved" value={stats.approved} />
+          <AdminStat title="Rejected" value={stats.rejected} />
         </div>
 
         {error && (
-          <div className="mt-6 rounded-xl border border-red-400/20 bg-red-400/5 p-4 text-sm text-red-300">
+          <div className="mt-6 rounded-xl border border-red-400/20 bg-red-400/5 p-4 text-red-300">
             {error}
           </div>
         )}
@@ -1183,7 +1189,7 @@ function Admin() {
               className={`rounded-xl px-4 py-3 text-sm font-bold ${
                 filter === item
                   ? "bg-orange-500 text-black"
-                  : "border border-white/10 bg-white/[0.02] text-white/60 hover:text-white"
+                  : "border border-white/10 text-white/60"
               }`}
             >
               {item}
@@ -1191,26 +1197,19 @@ function Admin() {
           ))}
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#0b0908]">
+        <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#0c0907]">
           {loading ? (
             <div className="p-10 text-center text-white/40">
               Loading bookings...
             </div>
-          ) : filteredBookings.length === 0 ? (
-            <div className="p-10 text-center">
-              <CalendarDays
-                className="mx-auto mb-4 text-white/20"
-                size={40}
-              />
-
-              <div className="font-bold text-white/50">
-                No bookings found
-              </div>
+          ) : filtered.length === 0 ? (
+            <div className="p-10 text-center text-white/40">
+              No bookings found.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[950px] text-left">
-                <thead className="border-b border-white/10 bg-white/[0.02]">
+                <thead className="border-b border-white/10">
                   <tr>
                     {[
                       "Customer",
@@ -1232,28 +1231,20 @@ function Admin() {
                 </thead>
 
                 <tbody>
-                  {filteredBookings.map((booking) => (
+                  {filtered.map((booking) => (
                     <tr
                       key={booking.id}
-                      className="border-b border-white/5 last:border-0"
+                      className="border-b border-white/5"
                     >
-                      <td className="px-5 py-5">
-                        <div className="font-bold">{booking.name}</div>
-
-                        <div className="mt-1 text-xs text-white/30">
-                          {booking.created_at
-                            ? new Date(
-                                booking.created_at
-                              ).toLocaleString("en-IN")
-                            : ""}
-                        </div>
+                      <td className="px-5 py-5 font-bold">
+                        {booking.name}
                       </td>
 
                       <td className="px-5 py-5 text-white/60">
                         {booking.phone}
                       </td>
 
-                      <td className="px-5 py-5 font-bold">
+                      <td className="px-5 py-5">
                         {formatDate(booking.date)}
                       </td>
 
@@ -1261,35 +1252,26 @@ function Admin() {
                         {booking.slot}
                       </td>
 
-                      <td className="px-5 py-5 text-white/60">
-                        {booking.players ?? "Not specified"}
+                      <td className="px-5 py-5">
+                        {booking.players || "-"}
                       </td>
 
                       <td className="px-5 py-5">
-                        <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${
-                            booking.status === "Approved"
-                              ? "bg-green-400/10 text-green-400"
-                              : booking.status === "Rejected"
-                              ? "bg-red-400/10 text-red-400"
-                              : "bg-yellow-400/10 text-yellow-300"
-                          }`}
-                        >
+                        <span className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-400">
                           {booking.status}
                         </span>
                       </td>
 
                       <td className="px-5 py-5">
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex gap-2">
                           {booking.status !== "Approved" && (
                             <button
                               onClick={() =>
                                 updateStatus(booking.id, "Approved")
                               }
-                              className="inline-flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-2 text-xs font-black text-black hover:bg-orange-400"
+                              className="rounded-lg bg-orange-500 px-3 py-2 text-xs font-black text-black"
                             >
                               <Check size={14} />
-                              Approve
                             </button>
                           )}
 
@@ -1298,7 +1280,7 @@ function Admin() {
                               onClick={() =>
                                 updateStatus(booking.id, "Rejected")
                               }
-                              className="rounded-lg border border-red-400/20 px-3 py-2 text-xs font-bold text-red-300 hover:bg-red-400/10"
+                              className="rounded-lg border border-red-400/20 px-3 py-2 text-xs text-red-300"
                             >
                               Reject
                             </button>
@@ -1306,7 +1288,7 @@ function Admin() {
 
                           <button
                             onClick={() => deleteBooking(booking.id)}
-                            className="rounded-lg border border-white/10 px-3 py-2 text-xs font-bold text-white/40 hover:bg-white/5 hover:text-white"
+                            className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/50"
                           >
                             Delete
                           </button>
@@ -1319,20 +1301,28 @@ function Admin() {
             </div>
           )}
         </div>
-
-        <div className="mt-6 rounded-2xl border border-orange-500/10 bg-orange-500/[0.03] p-5 text-sm leading-6 text-white/40">
-          <strong className="text-orange-400">Booking System:</strong>{" "}
-          Public bookings and the admin dashboard use the same Supabase
-          database.
-        </div>
       </main>
     </div>
   );
 }
 
-/* =========================================================
+function AdminStat({ title, value }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-[#0c0907] p-6">
+      <div className="text-xs font-bold uppercase tracking-widest text-white/30">
+        {title}
+      </div>
+
+      <div className="mt-2 text-4xl font-black text-orange-500">
+        {value}
+      </div>
+    </div>
+  );
+}
+
+/* =========================
    ROUTING
-========================================================= */
+========================= */
 
 const isAdmin = window.location.pathname === "/admin";
 
