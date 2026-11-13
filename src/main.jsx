@@ -1,4 +1,61 @@
 import React, { useEffect, useMemo, useState } from "react";
+function RadheCinematicBall() {
+  const [intro, setIntro] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIntro(false), 2500);
+    let raf = 0;
+    const update = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      setProgress(Math.min(1, Math.max(0, window.scrollY / max)));
+      raf = 0;
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", update);
+    <RadheCinematicBall />
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", update);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const x = Math.sin(progress * Math.PI * 2.2) * 70;
+  const y = Math.sin(progress * Math.PI * 6) * 38;
+  const rotate = progress * 1440;
+
+  return (
+    <>
+      {intro && (
+        <div className="radhe-cinematic-intro" aria-hidden="true">
+          <div className="radhe-intro-ball">
+            <span className="radhe-ball-seam" />
+          </div>
+          <div className="radhe-intro-flash" />
+          <div className="radhe-intro-copy">
+            <small>AHMEDABAD • BOX CRICKET</small>
+            <strong>YOUR GAME.<br /><em>YOUR NIGHT.</em></strong>
+          </div>
+        </div>
+      )}
+      <div
+        className="radhe-scroll-cricket-ball"
+        aria-hidden="true"
+        style={{
+          transform: `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg)`,
+          opacity: progress > 0.015 && progress < 0.985 ? 0.92 : 0
+        }}
+      >
+        <span className="radhe-ball-seam" />
+      </div>
+    </>
+  );
+}
+
 import { createRoot } from "react-dom/client";
 import {
   ArrowRight,
@@ -417,13 +474,13 @@ Price: ₹${selectedSlot?.price}
     <div className="min-h-screen w-full overflow-x-hidden bg-[#0D0917] text-white">
       {/* NAVBAR */}
 
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#0D0917]/95 backdrop-blur-xl">
+      <nav className="radhe-nav fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#0D0917]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
           <button
             onClick={() => setLogoTaps((prev) => prev + 1)}
             className="flex min-w-0 items-center gap-2 sm:gap-3"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#DFFF00] text-black sm:h-10 sm:w-10">
+            <div className="radhe-logo-mark flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#DFFF00] text-black sm:h-10 sm:w-10">
               <Trophy size={20} />
             </div>
 
@@ -454,7 +511,7 @@ Price: ₹${selectedSlot?.price}
 
             <a
               href="#booking"
-              className="rounded-xl bg-[#DFFF00] px-5 py-3 text-sm font-black text-black transition hover:bg-[#DFFF00]"
+              className="radhe-nav-cta rounded-xl bg-[#DFFF00] px-5 py-3 text-sm font-black text-black transition hover:bg-[#DFFF00]"
             >
               BOOK NOW
             </a>
@@ -503,18 +560,18 @@ Price: ₹${selectedSlot?.price}
 
       <section
         id="home"
-        className="relative flex min-h-screen items-center overflow-hidden pt-24"
+        className="radhe-hero relative flex min-h-screen items-center overflow-hidden pt-24"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(223,255,0,0.15),transparent_35%)]" />
+        <div className="radhe-hero-glow absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(223,255,0,0.15),transparent_35%)]" />
 
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-2 lg:gap-12 lg:px-8">
+        <div className="radhe-hero-grid relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-2 lg:gap-12 lg:px-8">
           <div>
-            <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-[#DFFF00]/20 bg-[#DFFF00]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#DFFF00] sm:px-4 sm:text-xs sm:tracking-[0.2em]">
+            <div className="radhe-eyebrow mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-[#DFFF00]/20 bg-[#DFFF00]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#DFFF00] sm:px-4 sm:text-xs sm:tracking-[0.2em]">
               <Sparkles size={13} />
               Radhe Farm • Ahmedabad
             </div>
 
-            <h1 className="text-[3.5rem] font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
+            <h1 className="radhe-title text-[3.5rem] font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
               PLAY HARD.
               <br />
               PLAY <span className="text-[#DFFF00]">RADHE.</span>
@@ -528,7 +585,7 @@ Price: ₹${selectedSlot?.price}
             <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
               <a
                 href="#booking"
-                className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-[#DFFF00] px-7 py-4 text-sm font-black text-black hover:bg-[#DFFF00]"
+                className="radhe-cta inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-[#DFFF00] px-7 py-4 text-sm font-black text-black hover:bg-[#DFFF00]"
               >
                 BOOK YOUR SLOT
                 <ArrowRight size={18} />
@@ -546,8 +603,8 @@ Price: ₹${selectedSlot?.price}
             </div>
           </div>
 
-          <div className="relative">
-            <div className="rounded-[24px] border border-white/10 bg-[#1A1427] p-5 shadow-2xl sm:rounded-[32px] sm:p-8">
+          <div className="radhe-hero-card-wrap relative">
+            <div className="radhe-hero-card rounded-[24px] border border-white/10 bg-[#1A1427] p-5 shadow-2xl sm:rounded-[32px] sm:p-8"><div className="radhe-scanline" aria-hidden="true" />
               <div className="mb-8 flex items-center justify-between sm:mb-12">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/30 sm:text-xs sm:tracking-[0.3em]">
@@ -569,7 +626,7 @@ Price: ₹${selectedSlot?.price}
                 <Stat value="₹1100" label="Night" />
               </div>
 
-              <div className="mt-3 rounded-2xl border border-[#DFFF00]/10 bg-[#DFFF00]/5 p-4 sm:mt-4 sm:p-5">
+              <div className="radhe-live-card mt-3 rounded-2xl border border-[#DFFF00]/10 bg-[#DFFF00]/5 p-4 sm:mt-4 sm:p-5">
                 <div className="flex items-center gap-3">
                   <div className="h-3 w-3 animate-pulse rounded-full bg-[#DFFF00]" />
                   <span className="text-xs font-bold sm:text-sm">
@@ -630,7 +687,7 @@ Price: ₹${selectedSlot?.price}
             </h2>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+          <div className="radhe-facility-grid grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             {facilities.map((item) => {
               const Icon = item.icon;
 
@@ -756,7 +813,7 @@ Price: ₹${selectedSlot?.price}
                     Select Slot *
                   </label>
 
-                  <div className="relative">
+                  <div className="radhe-hero-card-wrap relative">
                     <select
                       value={form.slot}
                       onChange={(e) => updateForm("slot", e.target.value)}
@@ -1319,7 +1376,7 @@ function Admin() {
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-5 sm:py-8 lg:px-8">
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+        <div className="radhe-facility-grid grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           <AdminStat title="Total" value={stats.total} />
           <AdminStat title="Pending Requests" value={stats.pending} />
           <AdminStat title="Blocked Slots" value={stats.blocked} />
