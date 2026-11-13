@@ -1,1459 +1,1391 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { createRoot } from "react-dom/client";
-import {
-  ArrowRight,
-  Check,
-  ChevronDown,
-  Clock3,
-  MapPin,
-  Menu,
-  Phone,
-  ShieldCheck,
-  Sparkles,
-  Trophy,
-  Users,
-  X,
-  Zap,
-} from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
-import "./index.css";
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
-const supabaseUrl =
-  import.meta.env.VITE_SUPABASE_URL ||
-  "https://pqskcjtqjfnarjoutaxa.supabase.co";
+@import "tailwindcss";
 
-const supabaseKey =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  "sb_publishable_fr_NvH33T_g7PBwywLsy2A_SD9-e0WW";
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-const ADMIN_KEY = "radheAdminLogged";
-
-const LOCATION_URL =
-  "https://www.google.com/search?rlz=1C1YTUH_enIN1016IN1016&sca_esv=9c0ea2fc79e91fa8&cs=0&output=search&kgmid=/g/11yrzb6nk5&q=Radhe+farm&shem=dlvs1,epsd1,esd2e,ltae,rimspwouoe,sdpie&shndl=30&source=sh/x/loc/uni/m1/1&kgs=f8e38dec6d960644&utm_source=dlvs1,epsd1,esd2e,ltae,rimspwouoe,sdpie,sh/x/loc/uni/m1/1";
-
-const PHONE = "7046706848";
-const OWNER = "Ankit";
-
-const QR_URL = `https://quickchart.io/qr?text=${encodeURIComponent(
-  LOCATION_URL
-)}&size=300&margin=2`;
-
-/* =========================
-   SLOT SYSTEM
-========================= */
-
-const formatHour = (hour) => {
-  const suffix = hour >= 12 ? "PM" : "AM";
-  const displayHour = hour % 12 || 12;
-
-  return `${String(displayHour).padStart(2, "0")}:00 ${suffix}`;
-};
-
-const SLOT_OPTIONS = Array.from({ length: 18 }, (_, index) => {
-  const start = index + 6;
-  const end = start + 1;
-
-  return {
-    value: `${formatHour(start)} - ${formatHour(end === 24 ? 0 : end)}`,
-    price: start < 17 ? 800 : 1100,
-    type: start < 17 ? "DAY" : "NIGHT",
-  };
-});
-
-function formatDate(date) {
-  if (!date) return "";
-
-  return new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #F5F3FA;
+  background: #0D0917;
+  font-synthesis: none;
 }
 
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #0D0917; }
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+button { cursor: pointer; }
 
-/* =========================
-   RADHE CINEMATIC INTRO
-========================= */
-function RadheCinematicIntro({ onDone }) {
-  const [phase, setPhase] = useState("ready");
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase("launch"), 500);
-    const t2 = setTimeout(() => setPhase("impact"), 2050);
-    const t3 = setTimeout(() => setPhase("reveal"), 2850);
-    const t4 = setTimeout(() => onDone(), 4300);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-    };
-  }, [onDone]);
-
-  return (
-    <div className={`radhe-intro ${phase}`} aria-hidden="true">
-      <div className="intro-noise" />
-      <div className="intro-vignette" />
-      <div className="intro-flood flood-left" />
-      <div className="intro-flood flood-right" />
-      <div className="intro-topline">RADHE FARM • AHMEDABAD</div>
-
-      <div className="intro-stadium">
-        <div className="intro-horizon" />
-        <div className="intro-pitch" />
-        <div className="intro-stumps">
-          <i /><i /><i />
-        </div>
-        <div className="intro-bat" />
-        <div className="intro-ball">
-          <span />
-        </div>
-        <div className="intro-impact" />
-      </div>
-
-      <div className="intro-copy">
-        <div className="intro-small">THE GAME IS ABOUT TO BEGIN</div>
-        <h1>YOUR GAME.<br /><span>YOUR NIGHT.</span></h1>
-        <div className="intro-line" />
-        <p>STEP INTO THE BOX</p>
-      </div>
-
-      <button className="intro-skip" onClick={onDone}>SKIP INTRO ↗</button>
-    </div>
-  );
+:root {
+  --neon-yellow: #DFFF00;
+  --black: #0D0917;
+  --muted: #AFA6BF;
 }
 
-/* =========================
-   PREMIUM BALL CURSOR
-========================= */
-function CricketCursor() {
-  const [pos, setPos] = useState({ x: -100, y: -100 });
-  const [visible, setVisible] = useState(false);
-  const [hit, setHit] = useState(false);
-
-  useEffect(() => {
-    const move = (e) => {
-      setPos({ x: e.clientX, y: e.clientY });
-      setVisible(true);
-    };
-    const leave = () => setVisible(false);
-    const click = () => {
-      setHit(true);
-      window.setTimeout(() => setHit(false), 260);
-    };
-
-    window.addEventListener("mousemove", move);
-    document.documentElement.addEventListener("mouseleave", leave);
-    window.addEventListener("click", click);
-    return () => {
-      window.removeEventListener("mousemove", move);
-      document.documentElement.removeEventListener("mouseleave", leave);
-      window.removeEventListener("click", click);
-    };
-  }, []);
-
-  return (
-    <div
-      className={`cricket-cursor ${visible ? "is-visible" : ""} ${hit ? "is-hit" : ""}`}
-      style={{ left: pos.x, top: pos.y }}
-    >
-      <span className="cursor-ball-seam" />
-      <span className="cursor-crosshair" />
-    </div>
-  );
+.navbar {
+  height: 82px; padding: 0 7%;
+  display: flex; align-items: center; justify-content: space-between;
+  background: #0D0917; position: relative; z-index: 5;
+  border-bottom: 1px solid #2A2438;
 }
 
-/* =========================
-   SECRET CRICKET GAME
-========================= */
+.logo {
+  display: flex; align-items: center; gap: 9px;
+  font-weight: 900; letter-spacing: 1px;
+}
+.logo span:last-child { color: var(--neon-yellow); font-size: 11px; }
+.logo-icon {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  background: var(--neon-yellow); color: #0D0917; font-weight: 900;
+  font-size: 20px; border-radius: 5px;
+}
+.nav-links { display: flex; gap: 30px; }
+.nav-links a { color: #D0C9DC; font-size: 13px; }
+.nav-links a:hover { color: var(--neon-yellow); }
+.nav-btn, .primary-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--neon-yellow); color: #0D0917; padding: 15px 22px;
+  font-size: 12px; font-weight: 900; letter-spacing: 1px;
+  border: 0; transition: .2s;
+}
+.nav-btn:hover, .primary-btn:hover { background: white; transform: translateY(-2px); }
+.menu-btn { display: none; background: none; border: 0; color: white; }
 
-function SecretCricketMode({ onClose }) {
-  const [ball, setBall] = useState(1);
-  const [score, setScore] = useState(0);
-  const [message, setMessage] = useState("TIME YOUR SWING");
-  const [running, setRunning] = useState(false);
-  const [position, setPosition] = useState(10);
-  const [gameOver, setGameOver] = useState(false);
+.hero {
+  min-height: 680px; position: relative; display: flex; align-items: center;
+  background:
+    linear-gradient(90deg, rgba(5,8,5,.95), rgba(5,8,5,.45)),
+    url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=2000&q=85')
+    center/cover;
+}
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(0deg,#0D0917,transparent 35%); }
+.hero-content { position: relative; padding: 80px 10%; max-width: 950px; }
+.eyebrow, .section-tag {
+  color: var(--neon-yellow); font-size: 11px; font-weight: 800;
+  letter-spacing: 3px; margin-bottom: 20px;
+}
+.hero h1, h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900; line-height: .92; letter-spacing: -1px;
+}
+.hero h1 { font-size: clamp(65px, 10vw, 125px); margin: 0; }
+.hero h1 span, h2 span { color: var(--neon-yellow); }
+.hero-desc { color: #D0C9DC; max-width: 440px; line-height: 1.8; margin: 26px 0; }
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+.outline-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 9px; border: 1px solid #71677F; padding: 14px 22px;
+  font-size: 11px; font-weight: 800; letter-spacing: 1px;
+  background: transparent; color: white;
+}
+.outline-btn:hover { border-color: var(--neon-yellow); color: var(--neon-yellow); }
+.hero-bottom {
+  display: flex; justify-content: space-between; gap: 20px;
+  margin-top: 90px; color: #AAA1B8; font-size: 10px; letter-spacing: 1px;
+}
+.hero-bottom span:first-child { display: flex; gap: 8px; align-items: center; }
 
-  useEffect(() => {
-    if (!running || gameOver) return;
+.stats {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  padding: 35px 10%; background: var(--neon-yellow); color: #0D0917;
+}
+.stats div { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.stats strong { font-size: 35px; font-weight: 900; }
+.stats span { font-size: 10px; font-weight: 900; letter-spacing: 2px; }
 
-    const timer = setInterval(() => {
-      setPosition((prev) => (prev >= 92 ? 8 : prev + 4));
-    }, 80);
+.section { padding: 100px 10%; }
+.about-grid, .booking-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+}
+.section h2 { font-size: clamp(55px, 7vw, 85px); margin: 25px 0; }
+.about-grid p, .contact p { color: var(--muted); line-height: 1.9; }
+.text-link { color: var(--neon-yellow); font-size: 12px; font-weight: 900; }
+.facilities { background: #120D1D; }
+.facility-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 45px; }
+.facility-card {
+  padding: 32px; background: #1B1428; border: 1px solid #332842;
+  min-height: 210px;
+}
+.facility-card svg { color: var(--neon-yellow); width: 30px; height: 30px; }
+.facility-card h3 { font-size: 14px; margin-top: 28px; }
+.facility-card p { color: var(--muted); font-size: 13px; line-height: 1.7; }
 
-    return () => clearInterval(timer);
-  }, [running, gameOver]);
+.booking { background: #100B19; }
+.booking-info { margin-top: 40px; }
+.booking-info p { display: flex; gap: 12px; align-items: center; color: #D0C9DC; }
+.booking-info svg { color: var(--neon-yellow); }
+.booking-form {
+  padding: 35px; background: #1A1427; border: 1px solid #382D47;
+}
+.booking-form h3 { font-size: 20px; margin-top: 0; }
+.booking-form label { display: block; font-size: 11px; margin: 18px 0 8px; color: #C8C0D3; }
+.booking-form input {
+  width: 100%; padding: 13px; background: #0D0917;
+  border: 1px solid #40354F; color: white; outline: none;
+}
+.booking-form input:focus { border-color: var(--neon-yellow); }
+.slots { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+.slot { padding: 10px 3px; border: 1px solid #493C58; background: #151020; color: white; font-size: 10px; }
+.slot.active { background: var(--neon-yellow); color: black; border-color: var(--neon-yellow); }
+.demo-note { font-size: 9px; color: #9D93AA; letter-spacing: 1px; margin: 20px 0; }
+.submit-btn { width: 100%; }
+.message { color: var(--neon-yellow); font-size: 12px; line-height: 1.6; }
 
-  const startGame = () => {
-    setBall(1);
-    setScore(0);
-    setPosition(10);
-    setMessage("SWING!");
-    setRunning(true);
-    setGameOver(false);
-  };
+.contact { text-align: center; }
+.contact .section-tag { text-align: center; }
+.contact h2 { font-size: clamp(65px, 9vw, 105px); }
+.contact-actions { margin-top: 30px; }
+footer {
+  padding: 30px 7%; border-top: 1px solid #30263F;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+}
+footer p, footer > a:last-child { color: #91879E; font-size: 9px; letter-spacing: 1px; }
 
-  const swing = () => {
-    if (!running || gameOver) {
-      startGame();
-      return;
-    }
-
-    const distance = Math.abs(position - 50);
-
-    let runs = 0;
-    let result = "WICKET! 💀";
-
-    if (distance <= 2) {
-      runs = 6;
-      result = "SIX! 🚀";
-    } else if (distance <= 10) {
-      runs = 4;
-      result = "FOUR! 🔥";
-    } else if (distance <= 20) {
-      runs = 1;
-      result = "ONE RUN";
-    }
-
-    setScore((prev) => prev + runs);
-    setMessage(result);
-
-    if (ball >= 6) {
-      setRunning(false);
-      setGameOver(true);
-    } else {
-      setBall((prev) => prev + 1);
-      setPosition(10);
-    }
-  };
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (
-        (e.code === "Space" || e.code === "Enter") &&
-        running &&
-        !gameOver
-      ) {
-        e.preventDefault();
-        swing();
-      }
-    };
-
-    window.addEventListener("keydown", handler);
-
-    return () => window.removeEventListener("keydown", handler);
-  }, [running, gameOver, position, ball]);
-
-  return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 p-4">
-      <div className="relative w-full max-w-xl rounded-3xl border border-orange-500/30 bg-[#100c09] p-6 shadow-2xl">
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-full border border-white/10 p-2 text-white/60 hover:bg-white/10"
-        >
-          <X size={20} />
-        </button>
-
-        <div className="mb-8 text-center">
-          <div className="text-xs font-bold uppercase tracking-[0.35em] text-orange-400">
-            Secret Mode
-          </div>
-
-          <h2 className="mt-2 text-4xl font-black uppercase italic">
-            Cricket <span className="text-orange-500">Mode</span>
-          </h2>
-        </div>
-
-        <div className="mb-5 flex justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <div>
-            <div className="text-xs uppercase tracking-widest text-white/40">
-              Score
-            </div>
-
-            <div className="text-3xl font-black text-orange-500">
-              {score}
-            </div>
-          </div>
-
-          <div className="text-right">
-            <div className="text-xs uppercase tracking-widest text-white/40">
-              Ball
-            </div>
-
-            <div className="text-2xl font-black">{ball}/6</div>
-          </div>
-        </div>
-
-        <div className="relative mb-6 h-28 overflow-hidden rounded-2xl border border-white/10 bg-[#21150d]">
-          <div className="absolute left-1/2 top-0 h-full w-px bg-orange-500/30" />
-
-          <div
-            className="absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-red-500 shadow-lg"
-            style={{ left: `${position}%` }}
-          />
-        </div>
-
-        <div className="mb-6 text-center text-2xl font-black uppercase italic">
-          {message}
-        </div>
-
-        <button
-          onClick={swing}
-          className="w-full rounded-2xl bg-orange-500 py-4 font-black tracking-widest text-black hover:bg-orange-400"
-        >
-          {gameOver ? "PLAY AGAIN" : running ? "SWING" : "START GAME"}
-        </button>
-
-        <div className="mt-4 text-center text-xs text-white/30">
-          SPACE / ENTER
-        </div>
-      </div>
-    </div>
-  );
+.admin-page { min-height: 100vh; padding: 40px 7%; background: #0D0917; }
+.admin-login { max-width: 420px; margin: 100px auto; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; }
+.admin-header span { color: var(--neon-yellow); }
+.admin-booking { padding: 20px; margin: 15px 0; background: #1A1427; border: 1px solid #382D47; }
+.admin-booking p { color: #AAA1B8; font-size: 13px; }
+.admin-booking button {
+  padding: 9px 15px; margin: 5px; background: var(--neon-yellow);
+  color: black; border: 0; font-weight: 800;
 }
 
-/* =========================
-   MAIN APP
-========================= */
-
-function App() {
-  const [introDone, setIntroDone] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [logoTaps, setLogoTaps] = useState(0);
-  const [showGame, setShowGame] = useState(false);
-
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    date: "",
-    slot: "",
-    players: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const selectedSlot = useMemo(
-    () => SLOT_OPTIONS.find((slot) => slot.value === form.slot),
-    [form.slot]
-  );
-
-  useEffect(() => {
-    if (logoTaps >= 5) {
-      setShowGame(true);
-      setLogoTaps(0);
-    }
-  }, [logoTaps]);
-
-  const updateForm = (key, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-
-    setMessage("");
-  };
-
-  const submitBooking = async (e) => {
-    e.preventDefault();
-    setMessage("");
-
-    if (!supabase) {
-      setMessage("Booking system is not connected.");
-      return;
-    }
-
-    if (!form.name || !form.phone || !form.date || !form.slot) {
-      setMessage("Please fill all required details.");
-      return;
-    }
-
-    if (form.phone.replace(/\D/g, "").length < 10) {
-      setMessage("Please enter a valid 10-digit phone number.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { data: existing, error: checkError } = await supabase
-        .from("bookings")
-        .select("id")
-        .eq("date", form.date)
-        .eq("slot", form.slot)
-        .neq("status", "Rejected");
-
-      if (checkError) throw checkError;
-
-      if (existing?.length) {
-        setMessage("This slot is already booked. Choose another slot.");
-        return;
-      }
-
-      const { error } = await supabase.from("bookings").insert([
-        {
-          name: form.name.trim(),
-          phone: form.phone.trim(),
-          date: form.date,
-          slot: form.slot,
-          players: form.players ? Number(form.players) : null,
-          status: "Pending",
-        },
-      ]);
-
-      if (error) throw error;
-
-      setMessage(
-        `Booking request submitted! ₹${selectedSlot?.price} ${selectedSlot?.type?.toLowerCase()} slot selected.`
-      );
-
-      setForm({
-        name: "",
-        phone: "",
-        date: "",
-        slot: "",
-        players: "",
-      });
-    } catch (error) {
-      console.error(error);
-      setMessage("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const facilities = [
-    {
-      icon: Trophy,
-      title: "Premium Turf",
-      text: "Professional box cricket turf for competitive gameplay.",
-    },
-    {
-      icon: Zap,
-      title: "Power Lighting",
-      text: "Bright lighting for evening and night matches.",
-    },
-    {
-      icon: Users,
-      title: "Team Ready",
-      text: "Perfect for friends, teams, tournaments and practice.",
-    },
-    {
-      icon: ShieldCheck,
-      title: "Safe & Clean",
-      text: "Clean and maintained playing environment.",
-    },
-  ];
-
-  const finishIntro = () => {
-    setIntroDone(true);
-  };
-
-  return (
-    <>
-      {!introDone && <RadheCinematicIntro onDone={finishIntro} />}
-      <CricketCursor />
-      <div className="min-h-screen w-full overflow-x-hidden bg-[#080706] text-white">
-      {/* NAVBAR */}
-
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#080706]/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
-          <button
-            onClick={() => setLogoTaps((prev) => prev + 1)}
-            className="flex min-w-0 items-center gap-2 sm:gap-3"
-          >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-black sm:h-10 sm:w-10">
-              <Trophy size={20} />
-            </div>
-
-            <div className="text-left">
-              <div className="text-[11px] font-black tracking-[0.12em] sm:text-sm sm:tracking-[0.15em]">
-                RADHE
-              </div>
-
-              <div className="text-[7px] font-bold tracking-[0.22em] text-orange-400 sm:text-[10px] sm:tracking-[0.3em]">
-                BOX CRICKET
-              </div>
-            </div>
-          </button>
-
-          {/* DESKTOP NAV */}
-          <div className="hidden items-center gap-5 lg:flex">
-            {["home", "about", "facilities", "booking", "contact"].map(
-              (item) => (
-                <a
-                  key={item}
-                  href={`#${item}`}
-                  className="text-sm capitalize text-white/60 transition hover:text-white"
-                >
-                  {item}
-                </a>
-              )
-            )}
-
-            <a
-              href="#booking"
-              className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400"
-            >
-              BOOK NOW
-            </a>
-          </div>
-
-          {/* MOBILE MENU BUTTON */}
-          <button
-            onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label="Open menu"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] lg:hidden"
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-
-        {/* MOBILE MENU */}
-        {menuOpen && (
-          <div className="border-t border-white/10 bg-[#0b0908] px-4 py-4 lg:hidden">
-            <div className="mx-auto flex max-w-7xl flex-col gap-1">
-              {["home", "about", "facilities", "booking", "contact"].map(
-                (item) => (
-                  <a
-                    key={item}
-                    href={`#${item}`}
-                    onClick={() => setMenuOpen(false)}
-                    className="rounded-xl px-4 py-3 text-sm font-bold capitalize text-white/70 transition hover:bg-white/5 hover:text-white"
-                  >
-                    {item}
-                  </a>
-                )
-              )}
-
-              <a
-                href="#booking"
-                onClick={() => setMenuOpen(false)}
-                className="mt-2 rounded-xl bg-orange-500 px-4 py-3 text-center text-sm font-black text-black"
-              >
-                BOOK NOW
-              </a>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* HERO */}
-
-      <section
-        id="home"
-        className="relative flex min-h-screen items-center overflow-hidden pt-24"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(249,115,22,0.15),transparent_35%)]" />
-
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-2 lg:gap-12 lg:px-8">
-          <div>
-            <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-orange-400 sm:px-4 sm:text-xs sm:tracking-[0.2em]">
-              <Sparkles size={13} />
-              Radhe Farm • Ahmedabad
-            </div>
-
-            <h1 className="text-[3.5rem] font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
-              PLAY HARD.
-              <br />
-              PLAY <span className="text-orange-500">RADHE.</span>
-            </h1>
-
-            <p className="mt-6 max-w-xl text-base leading-7 text-white/55 sm:mt-7 sm:text-lg sm:leading-8">
-              Premium box cricket at Radhe Farm. Book your one-hour slot and
-              bring your team to the game.
-            </p>
-
-            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
-              <a
-                href="#booking"
-                className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-orange-500 px-7 py-4 text-sm font-black text-black hover:bg-orange-400"
-              >
-                BOOK YOUR SLOT
-                <ArrowRight size={18} />
-              </a>
-
-              <a
-                href={LOCATION_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border border-white/10 px-7 py-4 text-sm font-bold hover:bg-white/5"
-              >
-                <MapPin size={18} />
-                GET DIRECTIONS
-              </a>
-            </div>
-          </div>
-
-          <div className="relative">
-            <div className="rounded-[24px] border border-white/10 bg-[#110d09] p-5 shadow-2xl sm:rounded-[32px] sm:p-8">
-              <div className="mb-8 flex items-center justify-between sm:mb-12">
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/30 sm:text-xs sm:tracking-[0.3em]">
-                    RADHE FARM
-                  </div>
-
-                  <div className="mt-1 text-xl font-black uppercase italic sm:text-2xl">
-                    GAME ON
-                  </div>
-                </div>
-
-                <Trophy className="text-orange-500" size={32} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <Stat value="18" label="Daily Slots" />
-                <Stat value="1 HR" label="Each Slot" />
-                <Stat value="₹800" label="Day" />
-                <Stat value="₹1100" label="Night" />
-              </div>
-
-              <div className="mt-3 rounded-2xl border border-orange-500/10 bg-orange-500/5 p-4 sm:mt-4 sm:p-5">
-                <div className="flex items-center gap-3">
-                  <div className="h-3 w-3 animate-pulse rounded-full bg-orange-500" />
-                  <span className="text-xs font-bold sm:text-sm">
-                    BOOKINGS OPEN NOW
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ABOUT */}
-
-      <section id="about" className="radhe-reveal border-t border-white/5 py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-            <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
-                ABOUT THE VENUE
-              </div>
-
-              <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
-                MORE THAN
-                <br />
-                JUST A <span className="text-orange-500">GAME.</span>
-              </h2>
-            </div>
-
-            <div className="text-white/55">
-              <p className="text-base leading-7 sm:text-lg sm:leading-8">
-                Radhe Box Cricket at Radhe Farm is made for teams, friends,
-                tournaments and anyone who loves cricket.
-              </p>
-
-              <p className="mt-4 leading-7 sm:mt-5">
-                Pick your slot, bring your squad and let the game begin.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FACILITIES */}
-
-      <section
-        id="facilities"
-        className="radhe-reveal border-t border-white/5 bg-white/[0.015] py-20 sm:py-24"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
-          <div className="mb-10 sm:mb-12">
-            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
-              THE EXPERIENCE
-            </div>
-
-            <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
-              BUILT FOR <span className="text-orange-500">PLAY.</span>
-            </h2>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-            {facilities.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div
-                  key={item.title}
-                  className="group rounded-2xl border border-white/10 bg-[#0c0907] p-5 transition hover:border-orange-500/30 sm:rounded-3xl sm:p-7"
-                >
-                  <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-black sm:mb-8 sm:h-12 sm:w-12 sm:rounded-2xl">
-                    <Icon size={22} />
-                  </div>
-
-                  <h3 className="text-lg font-black uppercase sm:text-xl">
-                    {item.title}
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-white/45">
-                    {item.text}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* BOOKING */}
-
-      <section id="booking" className="radhe-reveal border-t border-white/5 py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
-            <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
-                RESERVE YOUR TURF
-              </div>
-
-              <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
-                BOOK
-                <br />
-                YOUR <span className="text-orange-500">GAME.</span>
-              </h2>
-
-              <p className="mt-5 max-w-md text-sm leading-7 text-white/45 sm:mt-6 sm:text-base">
-                Choose a date and one-hour slot. Day slots are ₹800 and
-                evening/night slots are ₹1100.
-              </p>
-
-              <div className="mt-7 grid grid-cols-2 gap-3 sm:mt-8">
-                <PriceCard
-                  title="DAY"
-                  price="₹800"
-                  time="06 AM – 05 PM"
-                />
-
-                <PriceCard
-                  title="NIGHT"
-                  price="₹1100"
-                  time="05 PM – 12 AM"
-                />
-              </div>
-
-              <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.02] p-4 sm:mt-5 sm:p-5">
-                <div className="flex items-center gap-3">
-                  <Clock3 className="shrink-0 text-orange-500" size={20} />
-
-                  <div>
-                    <div className="text-sm font-bold sm:text-base">
-                      18 one-hour slots
-                    </div>
-
-                    <div className="text-xs text-white/40 sm:text-sm">
-                      06:00 AM to 12:00 AM
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <form
-              onSubmit={submitBooking}
-              className="rounded-2xl border border-white/10 bg-[#0c0907] p-4 sm:rounded-3xl sm:p-8"
-            >
-              <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
-                <Input
-                  label="Name *"
-                  value={form.name}
-                  onChange={(value) => updateForm("name", value)}
-                  placeholder="Your name"
-                />
-
-                <Input
-                  label="Phone *"
-                  value={form.phone}
-                  onChange={(value) => updateForm("phone", value)}
-                  placeholder="10-digit number"
-                  type="tel"
-                />
-
-                <div>
-                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/40 sm:text-xs">
-                    Date *
-                  </label>
-
-                  <input
-                    type="date"
-                    min={new Date().toISOString().split("T")[0]}
-                    value={form.date}
-                    onChange={(e) => updateForm("date", e.target.value)}
-                    className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none focus:border-orange-500 sm:px-4 sm:py-4"
-                  />
-                </div>
-
-                <Input
-                  label="Players"
-                  value={form.players}
-                  onChange={(value) => updateForm("players", value)}
-                  placeholder="e.g. 10"
-                  type="number"
-                />
-
-                <div className="sm:col-span-2">
-                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/40 sm:text-xs">
-                    Select Slot *
-                  </label>
-
-                  <div className="relative">
-                    <select
-                      value={form.slot}
-                      onChange={(e) => updateForm("slot", e.target.value)}
-                      className="box-border w-full min-w-0 appearance-none rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 pr-10 text-sm text-white outline-none focus:border-orange-500 sm:px-4 sm:py-4"
-                    >
-                      <option value="" className="bg-[#11100e] text-white">
-                        Select your slot
-                      </option>
-
-                      {SLOT_OPTIONS.map((slot) => (
-                        <option
-                          key={slot.value}
-                          value={slot.value}
-                          className="bg-[#11100e] text-white"
-                        >
-                          {slot.value} — ₹{slot.price}
-                        </option>
-                      ))}
-                    </select>
-
-                    <ChevronDown
-                      size={17}
-                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-orange-400 sm:right-4"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {selectedSlot && (
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4 sm:mt-5 sm:p-5">
-                  <div className="min-w-0">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
-                      Selected Slot
-                    </div>
-
-                    <div className="mt-1 truncate text-sm font-bold sm:text-base">
-                      {selectedSlot.value}
-                    </div>
-
-                    <div className="mt-1 text-[10px] text-white/40 sm:text-xs">
-                      {selectedSlot.type === "DAY"
-                        ? "Day Booking"
-                        : "Night Booking"}
-                    </div>
-                  </div>
-
-                  <div className="shrink-0 text-right">
-                    <div className="text-[9px] uppercase tracking-widest text-white/30">
-                      PRICE
-                    </div>
-
-                    <div className="text-2xl font-black text-orange-500 sm:text-3xl">
-                      ₹{selectedSlot.price}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {message && (
-                <div className="mt-4 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-sm text-orange-300 sm:mt-5">
-                  {message}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl bg-orange-500 px-6 py-4 text-sm font-black text-black hover:bg-orange-400 disabled:opacity-50 sm:mt-6"
-              >
-                {loading ? (
-                  "SUBMITTING..."
-                ) : (
-                  <>
-                    REQUEST BOOKING
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      {/* LOCATION / CONTACT */}
-
-      <section
-        id="contact"
-        className="radhe-reveal border-t border-white/5 bg-[#0b0907] py-20 sm:py-24"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
-          <div className="mb-10 sm:mb-12">
-            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
-              FIND US
-            </div>
-
-            <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
-              COME PLAY <span className="text-orange-500">WITH US.</span>
-            </h2>
-          </div>
-
-          <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-            <div className="grid gap-3 sm:grid-cols-2 sm:gap-5">
-              <a
-                href={`tel:${PHONE}`}
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:rounded-3xl sm:p-7"
-              >
-                <Phone className="mb-5 text-orange-500" size={24} />
-
-                <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
-                  OWNER / CALL
-                </div>
-
-                <div className="mt-2 text-lg font-black sm:text-xl">
-                  {OWNER}
-                </div>
-
-                <div className="mt-1 text-sm text-orange-400">
-                  {PHONE}
-                </div>
-              </a>
-
-              <a
-                href={LOCATION_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:rounded-3xl sm:p-7"
-              >
-                <MapPin className="mb-5 text-orange-500" size={24} />
-
-                <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
-                  LOCATION
-                </div>
-
-                <div className="mt-2 text-lg font-black sm:text-xl">
-                  Radhe Farm
-                </div>
-
-                <div className="mt-1 text-sm text-orange-400">
-                  Open in Google Maps →
-                </div>
-              </a>
-
-              <a
-                href="https://instagram.com/radhe_box_cricket"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:col-span-2 sm:rounded-3xl sm:p-7"
-              >
-                <Sparkles className="mb-5 text-orange-500" size={24} />
-
-                <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
-                  INSTAGRAM
-                </div>
-
-                <div className="mt-2 text-lg font-black sm:text-xl">
-                  @radhe_box_cricket
-                </div>
-              </a>
-            </div>
-
-            {/* QR */}
-
-            <div className="rounded-2xl border border-orange-500/20 bg-[#100d0a] p-5 text-center sm:rounded-3xl sm:p-7">
-              <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs">
-                SCAN FOR LOCATION
-              </div>
-
-              <div className="mx-auto mt-5 flex w-fit rounded-2xl bg-white p-2.5 sm:p-3">
-                <img
-                  src={QR_URL}
-                  alt="Radhe Farm Google Maps QR Code"
-                  className="h-48 w-48 sm:h-52 sm:w-52"
-                />
-              </div>
-
-              <div className="mt-5 font-black">RADHE FARM</div>
-
-              <a
-                href={LOCATION_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400"
-              >
-                <MapPin size={16} />
-                GET DIRECTIONS
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-
-      <footer className="border-t border-white/5 py-7">
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 text-xs text-white/30 sm:px-5 sm:text-sm lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div>
-            © {new Date().getFullYear()} Radhe Box Cricket • Radhe Farm
-          </div>
-
-          <div>
-            Owner: {OWNER} • {PHONE}
-          </div>
-
-          <a href="/admin" className="hover:text-orange-400">
-            Admin
-          </a>
-        </div>
-      </footer>
-
-      {showGame && (
-        <SecretCricketMode onClose={() => setShowGame(false)} />
-      )}
-    </div>
-    </>
-  );
-}
-
-/* =========================
-   INPUT
-========================= */
-
-function Input({
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-}) {
-  return (
-    <div className="min-w-0">
-      <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/40 sm:text-xs">
-        {label}
-      </label>
-
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-orange-500 sm:px-4 sm:py-4"
-      />
-    </div>
-  );
-}
-
-/* =========================
-   PRICE CARD
-========================= */
-
-function PriceCard({ title, price, time }) {
-  return (
-    <div className="min-w-0 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4">
-      <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
-        {title}
-      </div>
-
-      <div className="mt-1 text-2xl font-black">{price}</div>
-
-      <div className="mt-1 text-[10px] text-white/40 sm:text-xs">
-        {time}
-      </div>
-    </div>
-  );
-}
-
-/* =========================
-   STAT
-========================= */
-
-function Stat({ value, label }) {
-  return (
-    <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-      <div className="text-2xl font-black text-orange-500 sm:text-3xl">
-        {value}
-      </div>
-
-      <div className="mt-1 text-[9px] uppercase tracking-widest text-white/35 sm:text-xs">
-        {label}
-      </div>
-    </div>
-  );
-}
-
-/* =========================
-   ADMIN
-========================= */
-
-function Admin() {
-  const [loggedIn, setLoggedIn] = useState(
-    sessionStorage.getItem(ADMIN_KEY) === "true"
-  );
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-
-  const [bookings, setBookings] = useState([]);
-  const [filter, setFilter] = useState("All");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const loadBookings = async () => {
-    if (!supabase) {
-      setError("Supabase is not connected.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { data, error } = await supabase
-        .from("bookings")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      setBookings(data || []);
-    } catch (err) {
-      console.error(err);
-      setError("Could not load bookings.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (loggedIn) loadBookings();
-  }, [loggedIn]);
-
-  const login = (e) => {
-    e.preventDefault();
-    setLoginError("");
-
-    const owner =
-      email === "owner@radhebox.demo" &&
-      password === "radhe123";
-
-    const staff =
-      email === "staff@radhebox.demo" &&
-      password === "staff123";
-
-    if (!owner && !staff) {
-      setLoginError("Invalid login details.");
-      return;
-    }
-
-    sessionStorage.setItem(ADMIN_KEY, "true");
-    setLoggedIn(true);
-  };
-
-  const logout = () => {
-    sessionStorage.removeItem(ADMIN_KEY);
-    setLoggedIn(false);
-  };
-
-  const updateStatus = async (id, status) => {
-    if (!supabase) return;
-
-    const { error } = await supabase
-      .from("bookings")
-      .update({ status })
-      .eq("id", id);
-
-    if (error) {
-      setError("Could not update booking.");
-      return;
-    }
-
-    loadBookings();
-  };
-
-  const deleteBooking = async (id) => {
-    if (!supabase) return;
-
-    if (!window.confirm("Delete this booking?")) return;
-
-    const { error } = await supabase
-      .from("bookings")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      setError("Could not delete booking.");
-      return;
-    }
-
-    loadBookings();
-  };
-
-  const filtered =
-    filter === "All"
-      ? bookings
-      : bookings.filter((b) => b.status === filter);
-
-  const stats = {
-    total: bookings.length,
-    pending: bookings.filter((b) => b.status === "Pending").length,
-    approved: bookings.filter((b) => b.status === "Approved").length,
-    rejected: bookings.filter((b) => b.status === "Rejected").length,
-  };
-
-  if (!loggedIn) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#080706] px-4 text-white">
-        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0c0907] p-6 sm:p-8">
-          <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500 text-black">
-              <ShieldCheck size={28} />
-            </div>
-
-            <div className="text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
-              RADHE BOX CRICKET
-            </div>
-
-            <h1 className="mt-2 text-3xl font-black uppercase">
-              Admin Panel
-            </h1>
-          </div>
-
-          <form onSubmit={login} className="space-y-5">
-            <Input
-              label="Email"
-              value={email}
-              onChange={setEmail}
-              placeholder="owner@radhebox.demo"
-              type="email"
-            />
-
-            <Input
-              label="Password"
-              value={password}
-              onChange={setPassword}
-              placeholder="Password"
-              type="password"
-            />
-
-            {loginError && (
-              <div className="rounded-xl border border-red-400/20 bg-red-400/5 p-4 text-sm text-red-300">
-                {loginError}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="w-full rounded-xl bg-orange-500 py-4 font-black text-black hover:bg-orange-400"
-            >
-              LOGIN
-            </button>
-          </form>
-
-          <div className="mt-6 rounded-xl border border-white/5 bg-white/[0.02] p-4 text-xs text-white/35">
-            <div>owner@radhebox.demo</div>
-            <div>radhe123</div>
-
-            <br />
-
-            <div>staff@radhebox.demo</div>
-            <div>staff123</div>
-          </div>
-        </div>
-      </div>
-    );
+@media(max-width: 800px) {
+  .navbar { padding: 0 5%; }
+  .nav-links {
+    display: none; position: absolute; top: 82px; left: 0; right: 0;
+    padding: 25px; background: #151020; flex-direction: column; gap: 22px;
+  }
+  .nav-links.show { display: flex; }
+  .nav-btn { display: none; }
+  .menu-btn { display: block; }
+  .hero { min-height: 620px; }
+  .hero-content { padding: 70px 7%; }
+  .hero-bottom { margin-top: 65px; flex-direction: column; }
+  .section { padding: 75px 7%; }
+  .about-grid, .booking-grid { grid-template-columns: 1fr; gap: 25px; }
+  .facility-grid { grid-template-columns: 1fr; }
+  .stats { padding: 25px 5%; }
+  .stats strong { font-size: 27px; }
+  .stats span { font-size: 8px; text-align: center; }
+  footer { flex-direction: column; text-align: center; }
   }
 
-  return (
-    <div className="min-h-screen overflow-x-hidden bg-[#080706] text-white">
-      <header className="border-b border-white/10 bg-[#0c0907]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5 lg:px-8">
-          <div>
-            <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
-              RADHE BOX CRICKET
-            </div>
-
-            <h1 className="mt-1 text-xl font-black uppercase sm:text-2xl">
-              Booking Dashboard
-            </h1>
-          </div>
-
-          <div className="flex shrink-0 gap-2">
-            <button
-              onClick={loadBookings}
-              className="rounded-xl border border-white/10 px-3 py-2 text-xs font-bold sm:px-4 sm:py-3 sm:text-sm"
-            >
-              Refresh
-            </button>
-
-            <button
-              onClick={logout}
-              className="rounded-xl bg-orange-500 px-3 py-2 text-xs font-black text-black sm:px-4 sm:py-3 sm:text-sm"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-5 sm:py-8 lg:px-8">
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-          <AdminStat title="Total" value={stats.total} />
-          <AdminStat title="Pending" value={stats.pending} />
-          <AdminStat title="Approved" value={stats.approved} />
-          <AdminStat title="Rejected" value={stats.rejected} />
-        </div>
-
-        {error && (
-          <div className="mt-6 rounded-xl border border-red-400/20 bg-red-400/5 p-4 text-red-300">
-            {error}
-          </div>
-        )}
-
-        <div className="mt-6 flex flex-wrap gap-2">
-          {["All", "Pending", "Approved", "Rejected"].map((item) => (
-            <button
-              key={item}
-              onClick={() => setFilter(item)}
-              className={`rounded-xl px-4 py-3 text-sm font-bold ${
-                filter === item
-                  ? "bg-orange-500 text-black"
-                  : "border border-white/10 text-white/60"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#0c0907]">
-          {loading ? (
-            <div className="p-10 text-center text-white/40">
-              Loading bookings...
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="p-10 text-center text-white/40">
-              No bookings found.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[950px] text-left">
-                <thead className="border-b border-white/10">
-                  <tr>
-                    {[
-                      "Customer",
-                      "Phone",
-                      "Date",
-                      "Slot",
-                      "Players",
-                      "Status",
-                      "Actions",
-                    ].map((head) => (
-                      <th
-                        key={head}
-                        className="px-5 py-4 text-xs uppercase tracking-widest text-white/30"
-                      >
-                        {head}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {filtered.map((booking) => (
-                    <tr
-                      key={booking.id}
-                      className="border-b border-white/5"
-                    >
-                      <td className="px-5 py-5 font-bold">
-                        {booking.name}
-                      </td>
-
-                      <td className="px-5 py-5 text-white/60">
-                        {booking.phone}
-                      </td>
-
-                      <td className="px-5 py-5">
-                        {formatDate(booking.date)}
-                      </td>
-
-                      <td className="px-5 py-5 text-white/60">
-                        {booking.slot}
-                      </td>
-
-                      <td className="px-5 py-5">
-                        {booking.players || "-"}
-                      </td>
-
-                      <td className="px-5 py-5">
-                        <span className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-400">
-                          {booking.status}
-                        </span>
-                      </td>
-
-                      <td className="px-5 py-5">
-                        <div className="flex gap-2">
-                          {booking.status !== "Approved" && (
-                            <button
-                              onClick={() =>
-                                updateStatus(booking.id, "Approved")
-                              }
-                              className="rounded-lg bg-orange-500 px-3 py-2 text-xs font-black text-black"
-                            >
-                              <Check size={14} />
-                            </button>
-                          )}
-
-                          {booking.status !== "Rejected" && (
-                            <button
-                              onClick={() =>
-                                updateStatus(booking.id, "Rejected")
-                              }
-                              className="rounded-lg border border-red-400/20 px-3 py-2 text-xs text-red-300"
-                            >
-                              Reject
-                            </button>
-                          )}
-
-                          <button
-                            onClick={() => deleteBooking(booking.id)}
-                            className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/50"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
-  );
+.secret-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle, #24183A, #07050D 75%);
+  display: grid;
+  place-items: center;
+  padding: 18px;
 }
 
-function AdminStat({ title, value }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-[#0c0907] p-5 sm:p-6">
-      <div className="text-[10px] font-bold uppercase tracking-widest text-white/30 sm:text-xs">
-        {title}
-      </div>
-
-      <div className="mt-2 text-3xl font-black text-orange-500 sm:text-4xl">
-        {value}
-      </div>
-    </div>
-  );
+.secret-game {
+  width: 100%;
+  max-width: 430px;
+  position: relative;
+  text-align: center;
+  padding: 35px 22px;
+  background: #171021;
+  border: 1px solid #DFFF00;
+  box-shadow: 0 0 45px #DFFF0030;
+  border-radius: 18px;
+  color: white;
 }
 
-/* =========================
-   ROUTING
-========================= */
+.secret-close {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 23px;
+}
 
-const isAdmin = window.location.pathname === "/admin";
+.secret-tag, .secret-footer {
+  color: #DFFF00;
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-weight: 900;
+}
 
-createRoot(document.getElementById("root")).render(
-  isAdmin ? <Admin /> : <App />
-);
+.secret-game h2 { font-size: 34px; margin: 22px 0; }
+.secret-game h2 span { color: #DFFF00; }
+
+.secret-score {
+  background: #241A35;
+  padding: 18px;
+  border-radius: 12px;
+}
+
+.secret-score strong {
+  display: block;
+  font-size: 65px;
+  color: #DFFF00;
+}
+
+.secret-score span, .secret-score p {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #B8AFC4;
+}
+
+.secret-ball {
+  font-size: 65px;
+  margin: 22px;
+  animation: ballFloat 1.5s infinite ease-in-out;
+}
+
+.secret-result {
+  min-height: 28px;
+  color: #DFFF00;
+  font-weight: 900;
+}
+
+.secret-swing {
+  width: 100%;
+  padding: 17px;
+  background: #DFFF00;
+  color: #0D0917;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-top: 12px;
+}
+
+.secret-footer { color: #8F859C; margin-top: 25px; }
+
+@keyframes ballFloat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-12px) rotate(20deg); }
+}
+.pitch {
+  position: relative;
+  height: 90px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.ball-track {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 42px;
+  height: 4px;
+  background: #43394F;
+  border-radius: 10px;
+}
+
+.moving-ball {
+  position: absolute;
+  top: -25px;
+  transform: translateX(-50%);
+  font-size: 38px;
+  transition: left 0.05s linear;
+}
+
+.timing-zone {
+  position: absolute;
+  left: 48%;
+  width: 10%;
+  height: 65px;
+  top: 10px;
+  border: 2px solid #DFFF00;
+  border-radius: 8px;
+  background: #DFFF0018;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.timing-zone span {
+  font-size: 7px;
+  color: #DFFF00;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.keyboard-hint {
+  font-size: 10px;
+  color: #8F859C;
+  letter-spacing: 1px;
+  margin-top: 12px;
+}
+
+.secret-swing {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.secret-swing:hover {
+  transform: scale(1.03);
+}
+/* =========================================
+   ADMIN DASHBOARD
+========================================= */
+
+.admin-page {
+  min-height: 100vh;
+  padding: 45px 6%;
+  background: #0A0711;
+  color: #fff;
+}
+
+.admin-page h2 span,
+.admin-page h3 span {
+  color: #DFFF00;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 35px;
+}
+
+.admin-brand strong {
+  display: block;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.admin-brand small {
+  color: #9389A1;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.admin-login {
+  max-width: 470px;
+  margin: 8vh auto;
+}
+
+.admin-login h2 {
+  font-size: 42px;
+  margin: 12px 0 30px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 35px;
+}
+
+.admin-header h2 {
+  margin: 5px 0;
+  font-size: 42px;
+}
+
+.admin-header .outline-btn,
+.admin-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 45px;
+}
+
+.admin-stat {
+  background: #130D20;
+  border: 1px solid #302541;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.admin-stat span {
+  display: block;
+  color: #958BA3;
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+
+.admin-stat strong {
+  display: block;
+  color: #DFFF00;
+  font-size: 48px;
+  margin: 5px 0;
+}
+
+.admin-stat small {
+  color: #746A82;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.admin-stat.pending strong {
+  color: #DFFF00;
+}
+
+.admin-stat.approved strong {
+  color: #DFFF00;
+}
+
+.admin-stat.rejected strong {
+  color: #FF6B6B;
+}
+
+.admin-section {
+  background: #100B19;
+  border: 1px solid #2C223A;
+  border-radius: 18px;
+  padding: 28px;
+}
+
+.admin-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.admin-section-head h3 {
+  margin: 5px 0 0;
+  font-size: 24px;
+}
+
+.admin-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #30382d;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.admin-filter select {
+  background: transparent;
+  border: 0;
+  color: #fff;
+  outline: none;
+}
+
+.admin-filter option {
+  background: #130D20;
+  color: #fff;
+}
+
+.admin-bookings {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-booking {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  background: #171022;
+  border: 1px solid #352942;
+  border-radius: 12px;
+}
+
+.booking-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.booking-avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #DFFF00;
+  color: #080a07;
+  font-weight: 900;
+}
+
+.booking-main h4 {
+  margin: 0 0 5px;
+  font-size: 15px;
+}
+
+.booking-main p {
+  margin: 0;
+  color: #93899F;
+  font-size: 11px;
+}
+
+.booking-detail span {
+  display: block;
+  color: #776D83;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  margin-bottom: 5px;
+}
+
+.booking-detail strong {
+  font-size: 12px;
+}
+
+.status-pending {
+  color: #DFFF00;
+}
+
+.status-approved {
+  color: #DFFF00;
+}
+
+.status-rejected {
+  color: #FF6B6B;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.admin-actions button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 9px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.approve-btn {
+  background: #DFFF00;
+  color: #0A0711;
+}
+
+.reject-btn {
+  background: #35202B;
+  color: #FF9B8F;
+}
+
+.delete-btn {
+  background: #241C30;
+  color: #AAA1B8;
+}
+
+.admin-empty {
+  text-align: center;
+  padding: 65px 20px;
+  color: #81768F;
+}
+
+.admin-empty svg {
+  color: #DFFF00;
+  margin-bottom: 10px;
+}
+
+.admin-empty h3 {
+  color: #fff;
+  margin: 5px;
+}
+
+.admin-empty p {
+  font-size: 12px;
+}
+
+.admin-notice {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-left: 3px solid #DFFF00;
+  background: #171021;
+}
+
+.admin-notice strong {
+  color: #DFFF00;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.admin-notice p {
+  color: #93899F;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+
+/* =========================================
+   SECRET CRICKET MODE
+========================================= */
+
+.secret-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(
+    circle,
+    #24183A,
+    #07050D 75%
+  );
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.secret-game {
+  width: 100%;
+  max-width: 430px;
+  position: relative;
+  text-align: center;
+  padding: 35px 22px;
+  background: #171021;
+  border: 1px solid #DFFF00;
+  box-shadow: 0 0 45px #DFFF0030;
+  border-radius: 18px;
+  color: white;
+}
+
+.secret-close {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.secret-tag,
+.secret-footer {
+  color: #DFFF00;
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-weight: 900;
+}
+
+.secret-game h2 {
+  font-size: 34px;
+  margin: 22px 0;
+}
+
+.secret-game h2 span {
+  color: #DFFF00;
+}
+
+.secret-score {
+  background: #241A35;
+  padding: 18px;
+  border-radius: 12px;
+}
+
+.secret-score strong {
+  display: block;
+  font-size: 65px;
+  color: #DFFF00;
+}
+
+.secret-score span,
+.secret-score p {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #B8AFC4;
+}
+
+.pitch {
+  position: relative;
+  height: 90px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.ball-track {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 42px;
+  height: 4px;
+  background: #43394F;
+  border-radius: 10px;
+}
+
+.moving-ball {
+  position: absolute;
+  top: -25px;
+  transform: translateX(-50%);
+  font-size: 38px;
+  transition: left 0.05s linear;
+}
+
+.timing-zone {
+  position: absolute;
+  left: 48%;
+  width: 10%;
+  height: 65px;
+  top: 10px;
+  border: 2px solid #DFFF00;
+  border-radius: 8px;
+  background: #DFFF0018;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.timing-zone span {
+  font-size: 7px;
+  color: #DFFF00;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.secret-result {
+  min-height: 28px;
+  color: #DFFF00;
+  font-weight: 900;
+}
+
+.secret-swing {
+  width: 100%;
+  padding: 17px;
+  background: #DFFF00;
+  color: #0D0917;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+.keyboard-hint {
+  font-size: 10px;
+  color: #8F859C;
+  letter-spacing: 1px;
+  margin-top: 12px;
+}
+
+.secret-footer {
+  color: #8F859C;
+  margin-top: 25px;
+}
+
+
+/* =========================================
+   MOBILE ADMIN
+========================================= */
+
+@media (max-width: 800px) {
+
+  .admin-page {
+    padding: 28px 16px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+  }
+
+  .admin-header h2 {
+    font-size: 30px;
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-stat {
+    padding: 18px;
+  }
+
+  .admin-stat strong {
+    font-size: 38px;
+  }
+
+  .admin-section {
+    padding: 18px 12px;
+  }
+
+  .admin-section-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-booking {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .booking-main {
+    grid-column: 1 / -1;
+  }
+
+  .admin-actions {
+    grid-column: 1 / -1;
+  }
+
+  .admin-actions button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 500px) {
+
+  .admin-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .admin-stat {
+    padding: 14px;
+  }
+
+  .admin-stat strong {
+    font-size: 32px;
+  }
+
+  .admin-booking {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-detail {
+    padding-top: 5px;
+    border-top: 1px solid #302541;
+  }
+
+  .admin-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+  }
+
+  .admin-header .outline-btn {
+    padding: 10px;
+    font-size: 9px;
+  }
+
+  .admin-login h2 {
+    font-size: 34px;
+  }
+
+  .secret-game {
+    padding: 30px 17px;
+  }
+
+  .secret-game h2 {
+    font-size: 27px;
+  }
+}
+
+.secret-swing:active {
+  transform: scale(0.96);
+}
+/* ================================
+   MOBILE RESPONSIVE FIX
+================================ */
+
+@media (max-width: 767px) {
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Navbar */
+  nav {
+    width: 100%;
+  }
+
+  nav > div {
+    max-width: 100% !important;
+  }
+
+  /* Hero */
+  section {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Better mobile headings */
+  h1 {
+    font-size: clamp(3rem, 15vw, 4.5rem) !important;
+    line-height: 0.9 !important;
+  }
+
+  h2 {
+    font-size: clamp(2.3rem, 11vw, 3.5rem) !important;
+    line-height: 0.95 !important;
+  }
+
+  /* Cards */
+  .rounded-3xl {
+    border-radius: 1.25rem;
+  }
+
+  /* Prevent inputs from overflowing */
+  input,
+  select,
+  button {
+    max-width: 100%;
+  }
+
+  /* Booking form */
+  form {
+    width: 100%;
+  }
+
+  /* Location QR */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Make buttons easier to tap */
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile spacing */
+  .py-24 {
+    padding-top: 4.5rem !important;
+    padding-bottom: 4.5rem !important;
+  }
+
+  .py-20 {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  /* Mobile horizontal padding */
+  .px-5 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* Extra-small phones */
+@media (max-width: 420px) {
+  h1 {
+    font-size: 3.15rem !important;
+  }
+
+  h2 {
+    font-size: 2.4rem !important;
+  }
+
+  .text-6xl {
+    font-size: 3.15rem !important;
+  }
+
+  .text-5xl {
+    font-size: 2.4rem !important;
+  }
+
+  .text-4xl {
+    font-size: 2.1rem !important;
+  }
+
+  .text-lg {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .p-8 {
+    padding: 1.25rem !important;
+  }
+
+  .p-7 {
+    padding: 1.25rem !important;
+  }
+
+  .gap-12 {
+    gap: 2rem !important;
+  }
+
+  .gap-8 {
+    gap: 1.5rem !important;
+  }
+}
+/* =========================================================
+   RADHE PREMIUM MOTION LAYER
+   Purpose: premium sports-brand feel without changing logic.
+   ========================================================= */
+:root {
+  --radhe-yellow: #DFFF00;
+  --radhe-violet: #171126;
+  --radhe-lilac: #B8A7D9;
+  --radhe-ink: #0D0917;
+}
+
+body {
+  background:
+    radial-gradient(circle at 80% 10%, rgba(184,167,217,.06), transparent 28%),
+    #0D0917;
+}
+
+.radhe-nav {
+  transition: background .35s ease, border-color .35s ease, box-shadow .35s ease;
+  box-shadow: 0 10px 35px rgba(0,0,0,.12);
+}
+.radhe-nav:hover { box-shadow: 0 14px 45px rgba(0,0,0,.28); }
+.radhe-logo-mark {
+  box-shadow: 0 0 0 rgba(223,255,0,0);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.radhe-logo-mark:hover {
+  transform: rotate(-7deg) scale(1.07);
+  box-shadow: 0 0 28px rgba(223,255,0,.22);
+}
+.radhe-nav-cta, .radhe-cta {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(223,255,0,.08);
+  transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+}
+.radhe-nav-cta::after, .radhe-cta::after {
+  content: "";
+  position: absolute;
+  inset: -80% auto -80% -30%;
+  width: 28%;
+  transform: rotate(18deg) translateX(-160%);
+  background: rgba(255,255,255,.55);
+  filter: blur(10px);
+  transition: transform .55s ease;
+}
+.radhe-nav-cta:hover, .radhe-cta:hover {
+  transform: translateY(-3px) scale(1.015);
+  box-shadow: 0 16px 40px rgba(223,255,0,.16);
+  filter: brightness(1.03);
+}
+.radhe-nav-cta:hover::after, .radhe-cta:hover::after { transform: rotate(18deg) translateX(620%); }
+
+.radhe-hero {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 78% 38%, rgba(184,167,217,.11), transparent 26%),
+    radial-gradient(circle at 60% 80%, rgba(223,255,0,.045), transparent 24%);
+}
+.radhe-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .16;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, black, transparent 72%);
+  animation: radhe-grid-drift 18s linear infinite;
+}
+.radhe-hero-glow { animation: radhe-pulse 5s ease-in-out infinite; }
+.radhe-hero-grid { animation: radhe-enter-up .8s cubic-bezier(.2,.8,.2,1) both; }
+.radhe-eyebrow { animation: radhe-fade-in .7s .12s ease both; }
+.radhe-title { text-shadow: 0 12px 60px rgba(0,0,0,.32); animation: radhe-title-in .85s .1s cubic-bezier(.2,.8,.2,1) both; }
+.radhe-hero-card-wrap { animation: radhe-card-in 1s .22s cubic-bezier(.2,.8,.2,1) both; }
+.radhe-hero-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(184,167,217,.09), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)),
+    #1A1427 !important;
+  box-shadow: 0 35px 90px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), border-color .35s ease;
+}
+.radhe-hero-card:hover { transform: translateY(-8px) rotateX(1deg) rotateY(-1deg); border-color: rgba(223,255,0,.24); }
+.radhe-hero-card::before {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  right: -100px;
+  top: -110px;
+  border-radius: 50%;
+  background: rgba(223,255,0,.08);
+  filter: blur(2px);
+  animation: radhe-orb 6s ease-in-out infinite;
+}
+.radhe-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(223,255,0,.75), transparent);
+  opacity: .65;
+  animation: radhe-scan 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.radhe-live-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform .3s ease, border-color .3s ease, background .3s ease;
+}
+.radhe-live-card:hover { transform: translateY(-2px); border-color: rgba(223,255,0,.25); background: rgba(223,255,0,.08); }
+
+/* Make the existing stats feel like a scoreboard. */
+.radhe-hero-card .grid > div {
+  position: relative;
+  overflow: hidden;
+  transition: transform .28s ease, border-color .28s ease, background .28s ease;
+}
+.radhe-hero-card .grid > div:hover {
+  transform: translateY(-4px);
+  border-color: rgba(184,167,217,.24);
+  background: rgba(184,167,217,.06);
+}
+
+/* Section reveal feel for the existing page sections. */
+#about, #facilities, #booking, #contact {
+  position: relative;
+}
+#about::after, #facilities::after, #booking::after, #contact::after {
+  content: "";
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184,167,217,.18), transparent);
+}
+
+/* Facility cards: premium lift + glow. */
+.radhe-facility-grid > * {
+  transition: transform .32s cubic-bezier(.2,.8,.2,1), border-color .32s ease, box-shadow .32s ease;
+}
+.radhe-facility-grid > *:hover {
+  transform: translateY(-7px);
+  border-color: rgba(184,167,217,.28) !important;
+  box-shadow: 0 22px 55px rgba(0,0,0,.24);
+}
+
+@keyframes radhe-enter-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes radhe-card-in {
+  from { opacity: 0; transform: translateX(30px) scale(.98); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes radhe-title-in {
+  from { opacity: 0; transform: translateY(18px); letter-spacing: .03em; }
+  to { opacity: 1; transform: translateY(0); letter-spacing: -.02em; }
+}
+@keyframes radhe-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes radhe-pulse {
+  0%,100% { opacity: .55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+@keyframes radhe-orb {
+  0%,100% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(-25px,28px,0); }
+}
+@keyframes radhe-scan {
+  0%,100% { transform: translateY(0); opacity: 0; }
+  15% { opacity: .7; }
+  75% { opacity: .45; }
+  100% { transform: translateY(420px); opacity: 0; }
+}
+@keyframes radhe-grid-drift {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(52px,52px,0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+@media (max-width: 800px) {
+  .radhe-hero-grid { animation-duration: .65s; }
+  .radhe-hero-card:hover { transform: none; }
+  .radhe-hero::before { background-size: 34px 34px; }
+}
+
+/* Premium CTA contrast fix */
+.primary-btn,
+.nav-btn,
+button.primary-btn,
+a.primary-btn,
+.book-btn,
+.booking-cta {
+  color: #000000 !important;
+}
+
+/* ===== RADHE CINEMATIC CRICKET BALL ===== */
+.radhe-cinematic-intro{
+  position:fixed;inset:0;z-index:9999;background:#030207;
+  display:grid;place-items:center;overflow:hidden;
+  animation:radheIntroOut .7s 2.15s forwards;pointer-events:none;
+}
+.radhe-intro-ball,.radhe-scroll-cricket-ball{
+  position:fixed;width:68px;height:68px;border-radius:50%;
+  background:
+    radial-gradient(circle at 29% 22%,rgba(255,255,255,.75) 0 3%,transparent 7%),
+    radial-gradient(ellipse at 50% 50%,#c51f2a 0 43%,#8b101a 44% 68%,#35050a 70% 100%);
+  box-shadow:inset -14px -14px 20px #320006,inset 5px 5px 8px rgba(255,255,255,.18),0 0 28px rgba(223,255,0,.35);
+}
+.radhe-intro-ball{left:-100px;top:52%;animation:radheBallStrike 1.35s cubic-bezier(.12,.8,.18,1) forwards;}
+.radhe-scroll-cricket-ball{right:7%;top:28%;z-index:80;pointer-events:none;transition:opacity .2s ease;}
+.radhe-ball-seam{position:absolute;inset:7px 20px;border:2px dashed rgba(255,255,255,.9);border-radius:50%;transform:rotate(-28deg);filter:drop-shadow(0 1px 1px #500);}
+.radhe-intro-copy{position:relative;z-index:2;text-align:center;opacity:0;animation:radheCopyIn .8s 1.55s forwards;}
+.radhe-intro-copy small{display:block;color:#b8a7d9;font-weight:800;letter-spacing:5px;font-size:11px;margin-bottom:18px;}
+.radhe-intro-copy strong{display:block;color:#f5f3fa;font-size:clamp(48px,9vw,120px);line-height:.84;letter-spacing:-6px;}
+.radhe-intro-copy em{font-style:normal;color:#dfff00;}
+.radhe-intro-flash{position:absolute;inset:0;background:#fff;opacity:0;animation:radheFlash .1s 1.2s;}
+@keyframes radheBallStrike{
+  0%{transform:translateX(0) rotate(0)}
+  72%{transform:translateX(58vw) rotate(900deg)}
+  100%{transform:translateX(54vw) rotate(1080deg) scale(.9)}
+}
+@keyframes radheCopyIn{to{opacity:1}}
+@keyframes radheFlash{50%{opacity:.18}}
+@keyframes radheIntroOut{to{opacity:0;visibility:hidden}}
+@media(max-width:700px){
+  .radhe-intro-ball,.radhe-scroll-cricket-ball{width:46px;height:46px;}
+  .radhe-intro-copy strong{letter-spacing:-3px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .radhe-cinematic-intro{display:none}.radhe-scroll-cricket-ball{display:none;}
+}
+
+/* =========================================================
+   RADHE WORLD-FIRST EXPERIENCE LAYER
+   Interactive stadium, ball cursor, night mode, shot meter.
+   ========================================================= */
+.radhe-world-layer{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden;opacity:.72;transition:opacity .8s ease,filter .8s ease}
+.radhe-world-layer.radhe-night{filter:brightness(.72) saturate(1.2)}
+.radhe-pitch-grid{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 115%,rgba(223,255,0,.11),transparent 38%),linear-gradient(115deg,transparent 48%,rgba(184,167,217,.055) 49%,transparent 50%),linear-gradient(65deg,transparent 48%,rgba(184,167,217,.045) 49%,transparent 50%);background-size:auto,80px 80px,80px 80px;mask-image:linear-gradient(to bottom,transparent 0%,black 35%,transparent 92%);animation:radhe-pitch-drift 16s linear infinite}
+.radhe-floodlight{position:absolute;width:35vw;height:35vw;border-radius:50%;background:radial-gradient(circle,rgba(245,243,250,.16),rgba(184,167,217,.045) 28%,transparent 68%);filter:blur(10px);opacity:.7;animation:radhe-flood-pulse 5s ease-in-out infinite}
+.radhe-flood-1{top:-24vw;left:-8vw}.radhe-flood-2{top:-25vw;right:-8vw;animation-delay:1.5s}.radhe-flood-3{bottom:-30vw;left:34vw;animation-delay:3s}
+.radhe-flying-ball{position:absolute;right:8%;top:35%;width:72px;height:72px;border-radius:50%;background:radial-gradient(circle at 28% 22%,rgba(255,255,255,.8) 0 3%,transparent 7%),radial-gradient(circle at 45% 42%,#d93442 0 35%,#9e1420 57%,#36050a 100%);box-shadow:inset -16px -13px 22px #2b0307,inset 5px 4px 9px rgba(255,255,255,.16),0 0 40px rgba(223,255,0,.2);animation:radhe-orbit-ball 9s ease-in-out infinite;transition:transform .35s cubic-bezier(.12,.8,.2,1)}
+.radhe-flying-ball.is-hit{animation:radhe-shot 0.7s cubic-bezier(.12,.9,.2,1) forwards!important}
+.radhe-ball-cursor{position:fixed;z-index:10000;left:0;top:0;width:34px;height:34px;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 28% 22%,#fff 0 3%,transparent 8%),radial-gradient(circle,#d72d3a 0 42%,#7d0c15 67%,#240307 100%);box-shadow:0 0 20px rgba(223,255,0,.35);transition:transform .08s linear}
+.radhe-ball-cursor .radhe-ball-seam{inset:4px 10px;border-width:1px}
+.radhe-control-dock{position:fixed;right:18px;bottom:18px;z-index:1000;display:flex;gap:7px;padding:7px;border:1px solid rgba(184,167,217,.16);border-radius:16px;background:rgba(13,9,23,.7);backdrop-filter:blur(16px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.radhe-control-dock button{border:0;border-radius:11px;padding:9px 11px;background:rgba(255,255,255,.055);color:#f5f3fa;font-size:9px;font-weight:900;letter-spacing:.1em;cursor:pointer}.radhe-control-dock button:hover{background:#dfff00;color:#000}
+.radhe-shot-widget{position:fixed;z-index:999;left:18px;bottom:18px;width:175px;padding:14px;border:1px solid rgba(223,255,0,.18);border-radius:18px;background:rgba(13,9,23,.78);backdrop-filter:blur(18px);box-shadow:0 20px 70px rgba(0,0,0,.38)}
+.radhe-shot-label{font-size:8px;letter-spacing:.2em;color:#b8a7d9;font-weight:900}.radhe-shot-widget strong{display:block;font-size:30px;line-height:1;color:#dfff00;margin:5px 0 9px}.radhe-shot-widget button{border:0;border-radius:9px;background:#dfff00;color:#000;font-weight:1000;font-size:10px;padding:9px 12px;cursor:pointer}.radhe-shot-widget .radhe-play-mini{display:block;width:100%;margin-top:7px;background:transparent;color:#f5f3fa;border:1px solid rgba(255,255,255,.12)}
+.radhe-hit-flash{position:fixed;inset:0;z-index:9998;display:grid;place-items:center;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 38%);animation:radhe-hit-screen .7s ease-out forwards;text-align:center}.radhe-hit-flash span,.radhe-hit-flash strong{display:block}.radhe-hit-flash span{font-size:12px;letter-spacing:.35em;color:#b8a7d9}.radhe-hit-flash strong{font-size:clamp(55px,12vw,150px);line-height:.8;color:#dfff00;text-shadow:0 0 60px rgba(223,255,0,.35)}
+.radhe-scroll-prompt{position:fixed;z-index:40;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(245,243,250,.34);font-size:8px;letter-spacing:.25em;font-weight:900;pointer-events:none;animation:radhe-prompt 2.5s ease-in-out infinite}.radhe-scroll-prompt b{font-size:20px;color:#dfff00}
+@keyframes radhe-pitch-drift{to{background-position:0 0,80px 80px,-80px 80px}}
+@keyframes radhe-flood-pulse{0%,100%{transform:scale(.9);opacity:.42}50%{transform:scale(1.08);opacity:.75}}
+@keyframes radhe-orbit-ball{0%,100%{transform:translate3d(0,0,0) rotate(0)}25%{transform:translate3d(-5vw,4vh,0) rotate(160deg)}50%{transform:translate3d(-2vw,13vh,0) rotate(360deg)}75%{transform:translate3d(4vw,6vh,0) rotate(540deg)}}
+@keyframes radhe-shot{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-75vw,-35vh) scale(.22) rotate(1400deg);opacity:0}}
+@keyframes radhe-hit-screen{0%{opacity:0;transform:scale(.92)}12%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.08)}}
+@keyframes radhe-prompt{0%,100%{opacity:.3;transform:translate(-50%,0)}50%{opacity:1;transform:translate(-50%,7px)}}
+@media(max-width:700px){.radhe-ball-cursor{display:none}.radhe-flying-ball{width:48px;height:48px}.radhe-shot-widget{left:10px;bottom:10px;width:145px;padding:10px}.radhe-control-dock{right:10px;bottom:10px}.radhe-control-dock button{padding:8px;font-size:8px}.radhe-scroll-prompt{bottom:88px}.radhe-world-layer{opacity:.52}}
+@media(prefers-reduced-motion:reduce){.radhe-world-layer,.radhe-scroll-prompt{display:none}.radhe-ball-cursor{display:none}}
+
+
+/* =========================================================
+   RADHE FINAL CINEMATIC SYSTEM
+   Black intro → floodlights → ball → BAT IMPACT → reveal
+========================================================= */
+.radhe-intro{
+  position:fixed;inset:0;z-index:99999;overflow:hidden;
+  background:#050407;color:#f5f3fa;
+  display:flex;align-items:center;justify-content:center;
+  isolation:isolate;
+  animation:radhe-intro-exit .9s cubic-bezier(.7,0,.2,1) 3.5s forwards;
+}
+.radhe-intro.ready .intro-copy{opacity:0;transform:translateY(18px)}
+.radhe-intro.launch .intro-copy{opacity:1;transform:none}
+.radhe-intro.impact .intro-copy{opacity:1;transform:none}
+.radhe-intro.reveal .intro-copy{opacity:1;transform:scale(1.02)}
+.intro-noise{position:absolute;inset:0;opacity:.06;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E")}
+.intro-vignette{position:absolute;inset:-10%;background:radial-gradient(circle at center,transparent 15%,rgba(0,0,0,.32) 55%,#000 100%);z-index:4;pointer-events:none}
+.intro-topline{position:absolute;top:30px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:.42em;font-weight:900;color:rgba(245,243,250,.42);z-index:7;white-space:nowrap}
+.intro-stadium{position:absolute;inset:0;perspective:900px;z-index:2}
+.intro-horizon{position:absolute;left:50%;top:55%;width:100vw;height:1px;background:rgba(223,255,0,.2);box-shadow:0 0 30px rgba(223,255,0,.22)}
+.intro-pitch{position:absolute;left:50%;bottom:-28%;width:78vw;height:68vh;transform:translateX(-50%) rotateX(62deg);transform-origin:center top;background:repeating-linear-gradient(90deg,rgba(223,255,0,.06) 0 2px,transparent 2px 70px),repeating-linear-gradient(0deg,rgba(184,167,217,.08) 0 2px,transparent 2px 70px);border:1px solid rgba(223,255,0,.18);box-shadow:0 0 90px rgba(223,255,0,.08)}
+.intro-flood{position:absolute;z-index:1;top:5%;width:24vw;height:70vh;filter:blur(35px);opacity:0;transform-origin:top center;background:linear-gradient(180deg,rgba(245,243,250,.8),rgba(223,255,0,.12),transparent)}
+.intro-flood:after{content:"";position:absolute;top:0;left:50%;width:5px;height:100%;transform:translateX(-50%);background:#fff;box-shadow:0 0 25px 10px rgba(245,243,250,.5)}
+.flood-left{left:2%;transform:rotate(20deg);animation:radhe-flood-in 1.4s .25s ease-out forwards}
+.flood-right{right:2%;transform:rotate(-20deg);animation:radhe-flood-in 1.4s .45s ease-out forwards}
+.intro-stumps{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:74px;height:130px;opacity:.2}
+.intro-stumps i{position:absolute;bottom:0;width:5px;height:105px;background:#f5f3fa;box-shadow:0 0 14px rgba(245,243,250,.4)}
+.intro-stumps i:nth-child(1){left:10px}.intro-stumps i:nth-child(2){left:34px}.intro-stumps i:nth-child(3){right:10px}
+.intro-stumps:after{content:"";position:absolute;top:20px;left:8px;width:58px;height:4px;background:#f5f3fa;box-shadow:0 8px #f5f3fa}
+.intro-ball{position:absolute;left:calc(50% - 220px);top:calc(55% - 160px);width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#ff8c8c 0 6%,#d92d3d 20%,#8e1020 62%,#35040b 100%);box-shadow:0 0 22px rgba(255,55,75,.45),inset -8px -10px 15px rgba(0,0,0,.42);transform:translate(-45vw,35vh) rotate(-40deg) scale(.35);z-index:5;opacity:0}
+.intro-ball:before,.intro-ball:after{content:"";position:absolute;left:6%;top:48%;width:88%;height:3px;background:#f5f3fa;transform:rotate(24deg);border-radius:50%;box-shadow:0 0 2px #fff}
+.intro-ball:after{height:2px;background:transparent;border-left:3px dotted #fff;border-right:3px dotted #fff;transform:rotate(24deg)}
+.intro-ball span{position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(255,255,255,.2)}
+.radhe-intro.launch .intro-ball{animation:radhe-ball-launch 1.55s cubic-bezier(.18,.78,.18,1) .45s forwards}
+.radhe-intro.impact .intro-ball{opacity:1;transform:translate(-2px,0) rotate(720deg) scale(1.15);animation:radhe-ball-impact .34s ease-out forwards}
+.intro-bat{position:absolute;left:calc(50% + 35px);top:calc(55% - 105px);width:22px;height:230px;border-radius:13px 13px 8px 8px;background:linear-gradient(90deg,#6f4323,#e2b37a 42%,#9a5b2e 70%,#4a2818);transform-origin:82% 90%;transform:rotate(18deg);z-index:6;filter:drop-shadow(0 0 12px rgba(0,0,0,.8));opacity:0}
+.intro-bat:after{content:"";position:absolute;bottom:-62px;left:5px;width:12px;height:72px;background:linear-gradient(90deg,#111,#5b3b2c,#111);border-radius:5px}
+.radhe-intro.launch .intro-bat{opacity:1;animation:radhe-bat-cock .8s .9s ease-out forwards}
+.radhe-intro.impact .intro-bat{opacity:1;animation:radhe-bat-hit .42s ease-out forwards}
+.intro-impact{position:absolute;left:50%;top:55%;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 #fff,0 0 45px 20px rgba(223,255,0,.8);opacity:0;z-index:8}
+.radhe-intro.impact .intro-impact{animation:radhe-impact-flash .55s ease-out forwards}
+.intro-copy{position:relative;z-index:9;text-align:center;transition:all .7s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.intro-small{font-size:10px;letter-spacing:.5em;color:rgba(245,243,250,.45);font-weight:900;margin-bottom:18px}
+.intro-copy h1{margin:0;font-size:clamp(48px,8vw,118px);line-height:.82;letter-spacing:-.06em;font-weight:1000;text-shadow:0 10px 50px rgba(0,0,0,.8)}
+.intro-copy h1 span{color:#dfff00}
+.intro-line{width:100px;height:2px;margin:26px auto 15px;background:#dfff00;box-shadow:0 0 20px #dfff00}
+.intro-copy p{margin:0;font-size:10px;letter-spacing:.45em;font-weight:900;color:rgba(245,243,250,.55)}
+.intro-skip{position:absolute;right:28px;bottom:24px;z-index:20;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.35);color:rgba(255,255,255,.55);padding:10px 14px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.15em;cursor:pointer}
+.intro-skip:hover{color:#dfff00;border-color:#dfff00}
+@keyframes radhe-flood-in{from{opacity:0}to{opacity:.45}}
+@keyframes radhe-ball-launch{0%{opacity:0;transform:translate(-45vw,35vh) rotate(-180deg) scale(.35)}25%{opacity:1}70%{transform:translate(-9vw,7vh) rotate(720deg) scale(.9)}100%{opacity:1;transform:translate(0,0) rotate(1440deg) scale(1)}}
+@keyframes radhe-ball-impact{0%{transform:translate(0,0) rotate(1440deg) scale(1)}100%{transform:translate(-5px,4px) rotate(1530deg) scale(1.16)}}
+@keyframes radhe-bat-cock{0%{transform:rotate(18deg)}100%{transform:rotate(-4deg)}}
+@keyframes radhe-bat-hit{0%{transform:rotate(-4deg)}100%{transform:rotate(42deg)}}
+@keyframes radhe-impact-flash{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}15%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(18)}}
+@keyframes radhe-intro-exit{0%{opacity:1;visibility:visible}80%{opacity:1}100%{opacity:0;visibility:hidden;pointer-events:none}}
+.radhe-reveal{animation:radhe-section-in .9s both;animation-timeline:view();animation-range:entry 0% cover 24%}
+@keyframes radhe-section-in{from{opacity:0;transform:translateY(50px) scale(.985)}to{opacity:1;transform:none}}
+.cricket-cursor{position:fixed;z-index:99990;width:34px;height:34px;pointer-events:none;transform:translate(-50%,-50%);opacity:0;transition:opacity .18s;mix-blend-mode:screen}
+.cricket-cursor.is-visible{opacity:1}
+.cricket-cursor:before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 25%,#ff9b9b,#d51e35 42%,#640713 100%);box-shadow:0 0 18px rgba(255,60,80,.35)}
+.cursor-ball-seam{position:absolute;left:3px;top:15px;width:28px;height:4px;border-top:2px dashed rgba(255,255,255,.9);border-radius:50%;transform:rotate(-24deg)}
+.cursor-crosshair{position:absolute;inset:-10px;border:1px solid rgba(223,255,0,.35);border-radius:50%;animation:cursor-spin 2.5s linear infinite}
+.cricket-cursor.is-hit{transform:translate(-50%,-50%) scale(1.7);filter:brightness(1.8);transition:transform .08s}
+.cricket-cursor.is-hit .cursor-crosshair{border-color:#dfff00;box-shadow:0 0 20px #dfff00}
+@keyframes cursor-spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){
+  .cricket-cursor{display:none}
+  .intro-pitch{width:150vw;height:70vh}
+  .intro-ball{width:45px;height:45px;left:calc(50% - 150px)}
+  .intro-bat{left:calc(50% + 15px);height:170px;top:calc(55% - 75px)}
+  .intro-copy h1{font-size:14vw}
+  .intro-topline{font-size:7px;letter-spacing:.3em}
+}
+@media(prefers-reduced-motion:reduce){
+  .radhe-intro{animation:none;opacity:0;visibility:hidden}
+  .cricket-cursor{display:none}
+  .radhe-reveal{animation:none}
+}
+
+
+/* FINAL CTA CONTRAST FIX */
+.primary-btn,
+.nav-btn,
+button.primary-btn,
+a.primary-btn,
+.book-btn,
+.booking-cta,
+.submit-btn {
+  color: #000 !important;
+}
