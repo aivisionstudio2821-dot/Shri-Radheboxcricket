@@ -240,6 +240,7 @@ function App() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [bookedSlots, setBookedSlots] = useState([]);
 
   const selectedSlot = useMemo(
     () => SLOT_OPTIONS.find((slot) => slot.value === form.slot),
@@ -253,13 +254,59 @@ function App() {
     }
   }, [logoTaps]);
 
+  useEffect(() => {
+    if (!form.date) {
+      setBookedSlots([]);
+      return;
+    }
+
+    loadBookedSlots(form.date);
+
+    const interval = setInterval(() => {
+      loadBookedSlots(form.date);
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [form.date]);
+
+  const loadBookedSlots = async (date) => {
+    if (!date || !supabase) {
+      setBookedSlots([]);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("slot")
+      .eq("date", date)
+      .eq("status", "Approved");
+
+    if (error) {
+      console.error(error);
+      setBookedSlots([]);
+      return;
+    }
+
+    setBookedSlots((data || []).map((booking) => booking.slot));
+  };
+
   const updateForm = (key, value) => {
+    setMessage("");
+
+    if (key === "date") {
+      setForm((prev) => ({
+        ...prev,
+        date: value,
+        slot: "",
+      }));
+      loadBookedSlots(value);
+      return;
+    }
+
     setForm((prev) => ({
       ...prev,
       [key]: value,
     }));
-
-    setMessage("");
   };
 
   const submitBooking = async (e) => {
@@ -311,26 +358,22 @@ function App() {
 
       if (error) throw error;
 
-  const whatsappMessage = `Hi Radhe Box Cricket 👋
-
-I want to book a slot.
-
-Name: ${form.name}
+      const whatsappMessage = `Hi Radhe Box Cricket 👋\n\nI want to book a slot.\n\nName: ${form.name}
 Phone: ${form.phone}
 Date: ${formatDate(form.date)}
 Slot: ${form.slot}
 Players: ${form.players || "Not specified"}
 Price: ₹${selectedSlot?.price}
+\nPlease confirm my booking. 🏏`;
 
-Please confirm my booking. 🏏`;
+      window.open(
+        `https://wa.me/918160885601?text=${encodeURIComponent(whatsappMessage)}`,
+        "_blank"
+      );
+
       setMessage(
-  `Booking request submitted! ₹${selectedSlot?.price} ${selectedSlot?.type?.toLowerCase()} slot selected.`
-);
-
-window.open(
-  `https://wa.me/918160885601?text=${encodeURIComponent(whatsappMessage)}`,
-  "_blank"
-);
+        `Booking request submitted! ₹${selectedSlot?.price} ${selectedSlot?.type?.toLowerCase()} slot selected. WhatsApp opened for confirmation.`
+      );
 
       setForm({
         name: "",
@@ -723,15 +766,21 @@ window.open(
                         Select your slot
                       </option>
 
-                      {SLOT_OPTIONS.map((slot) => (
-                        <option
-                          key={slot.value}
-                          value={slot.value}
-                          className="bg-[#11100e] text-white"
-                        >
-                          {slot.value} — ₹{slot.price}
-                        </option>
-                      ))}
+                      {SLOT_OPTIONS.map((slot) => {
+                        const isBooked = bookedSlots.includes(slot.value);
+
+                        return (
+                          <option
+                            key={slot.value}
+                            value={slot.value}
+                            disabled={isBooked}
+                            className="bg-[#11100e] text-white"
+                          >
+                            {slot.value} — ₹{slot.price}
+                            {isBooked ? " • BOOKED" : ""}
+                          </option>
+                        );
+                      })}
                     </select>
 
                     <ChevronDown
