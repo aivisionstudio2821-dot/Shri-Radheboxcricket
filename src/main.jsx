@@ -460,6 +460,13 @@ Price: ₹${selectedSlot?.price}
             )}
 
             <a
+              href="/score"
+              className="rounded-xl border border-orange-500/30 px-4 py-3 text-sm font-black text-orange-300 transition hover:bg-orange-500/10"
+            >
+              🏏 LIVE SCORE
+            </a>
+
+            <a
               href="#booking"
               className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400"
             >
@@ -493,6 +500,14 @@ Price: ₹${selectedSlot?.price}
                   </a>
                 )
               )}
+
+              <a
+                href="/score"
+                onClick={() => setMenuOpen(false)}
+                className="mt-2 rounded-xl border border-orange-500/30 px-4 py-3 text-center text-sm font-black text-orange-300"
+              >
+                🏏 LIVE SCORE
+              </a>
 
               <a
                 href="#booking"
@@ -1438,10 +1453,8 @@ function Admin() {
               No bookings found.
             </div>
           ) : (
-            <>
-              {/* Desktop bookings table */}
-              <div className="hidden overflow-x-auto md:block">
-                <table className="w-full min-w-[950px] text-left">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[950px] text-left">
                 <thead className="border-b border-white/10">
                   <tr>
                     {[
@@ -1551,101 +1564,8 @@ function Admin() {
                     </tr>
                   ))}
                 </tbody>
-                </table>
-              </div>
-
-              {/* Mobile booking cards */}
-              <div className="divide-y divide-white/5 md:hidden">
-                {filtered.map((booking) => (
-                  <div key={booking.id} className="p-4 sm:p-5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="truncate text-base font-black text-white">
-                          {booking.name}
-                        </div>
-                        <div className="mt-1 text-xs text-white/40">
-                          {booking.phone}
-                        </div>
-                      </div>
-                      <span
-                        className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${
-                          booking.status === "Blocked"
-                            ? "bg-orange-500/10 text-orange-400"
-                            : booking.status === "Pending"
-                            ? "bg-yellow-400/10 text-yellow-300"
-                            : "bg-white/5 text-white/40"
-                        }`}
-                      >
-                        {booking.status}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-white/25">Date</div>
-                        <div className="mt-1 text-sm font-bold">{formatDate(booking.date)}</div>
-                      </div>
-                      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-white/25">Slot</div>
-                        <div className="mt-1 text-sm font-bold">{booking.slot}</div>
-                      </div>
-                      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-white/25">Players</div>
-                        <div className="mt-1 text-sm font-bold">{booking.players || "-"}</div>
-                      </div>
-                      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-white/25">Booking</div>
-                        <div className="mt-1 text-sm font-bold">#{String(booking.id).slice(0, 6)}</div>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {booking.status === "Pending" && (
-                        <button
-                          onClick={async () => {
-                            const confirmed = window.confirm(
-                              `Block ${booking.slot} on ${formatDate(booking.date)}?`
-                            );
-                            if (!confirmed) return;
-
-                            const { error } = await supabase
-                              .from("bookings")
-                              .update({ status: "Blocked" })
-                              .eq("id", booking.id);
-
-                            if (error) {
-                              setError("Could not block booking slot.");
-                              return;
-                            }
-
-                            await loadBookings();
-                          }}
-                          className="flex-1 rounded-xl bg-orange-500 px-3 py-3 text-xs font-black text-black"
-                        >
-                          BLOCK SLOT 🔒
-                        </button>
-                      )}
-
-                      {booking.status === "Blocked" && (
-                        <button
-                          onClick={() => unblockSlot(booking.id)}
-                          className="flex-1 rounded-xl border border-lime-400/20 px-3 py-3 text-xs font-bold text-lime-300"
-                        >
-                          UNBLOCK
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => deleteBooking(booking.id)}
-                        className="rounded-xl border border-white/10 px-4 py-3 text-xs font-bold text-white/50"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+              </table>
+            </div>
           )}
         </div>
 
