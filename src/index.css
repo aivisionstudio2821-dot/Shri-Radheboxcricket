@@ -1268,3 +1268,13 @@ a.primary-btn,
 @media(prefers-reduced-motion:reduce){
   .radhe-cinematic-intro{display:none}.radhe-scroll-cricket-ball{display:none;}
 }
+
+/* FINAL CTA TEXT OVERRIDE */
+.radhe-cta,
+.radhe-cta *,
+.radhe-nav-cta,
+.radhe-nav-cta *,
+.booking-cta,
+.booking-cta * {
+  color: #000000 !important;
+}
