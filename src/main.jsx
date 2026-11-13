@@ -279,7 +279,7 @@ function App() {
       .from("bookings")
       .select("slot")
       .eq("date", date)
-      .eq("status", "Approved");
+      .in("status", ["Approved", "Blocked"]);
 
     if (error) {
       console.error(error);
@@ -1062,6 +1062,9 @@ function Admin() {
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [blockDate, setBlockDate] = useState("");
+  const [blockSlot, setBlockSlot] = useState("");
+  const [blockLoading, setBlockLoading] = useState(false);
 
   const loadBookings = async () => {
     if (!supabase) {
@@ -1118,20 +1121,75 @@ function Admin() {
     setLoggedIn(false);
   };
 
-  const updateStatus = async (id, status) => {
+  const blockSlotManually = async () => {
     if (!supabase) return;
 
-    const { error } = await supabase
-      .from("bookings")
-      .update({ status })
-      .eq("id", id);
-
-    if (error) {
-      setError("Could not update booking.");
+    if (!blockDate || !blockSlot) {
+      setError("Select a date and slot to block.");
       return;
     }
 
-    loadBookings();
+    setBlockLoading(true);
+    setError("");
+
+    try {
+      const { data: existing, error: checkError } = await supabase
+        .from("bookings")
+        .select("id, status")
+        .eq("date", blockDate)
+        .eq("slot", blockSlot)
+        .in("status", ["Pending", "Approved", "Blocked"]);
+
+      if (checkError) throw checkError;
+
+      if (existing && existing.length > 0) {
+        setError("This date + slot already has a booking or block.");
+        return;
+      }
+
+      const { error: insertError } = await supabase
+        .from("bookings")
+        .insert([
+          {
+            name: "Manual Block",
+            phone: "-",
+            date: blockDate,
+            slot: blockSlot,
+            players: null,
+            status: "Blocked",
+          },
+        ]);
+
+      if (insertError) throw insertError;
+
+      setBlockDate("");
+      setBlockSlot("");
+      await loadBookings();
+    } catch (err) {
+      console.error(err);
+      setError("Could not block this slot.");
+    } finally {
+      setBlockLoading(false);
+    }
+  };
+
+  const unblockSlot = async (id) => {
+    if (!supabase) return;
+
+    if (!window.confirm("Unblock this slot?")) return;
+
+    const { error } = await supabase
+      .from("bookings")
+      .delete()
+      .eq("id", id)
+      .eq("status", "Blocked");
+
+    if (error) {
+      setError("Could not unblock slot.");
+      return;
+    }
+
+    await loadBookings();
   };
 
   const deleteBooking = async (id) => {
@@ -1160,6 +1218,7 @@ function Admin() {
   const stats = {
     total: bookings.length,
     pending: bookings.filter((b) => b.status === "Pending").length,
+    blocked: bookings.filter((b) => b.status === "Blocked").length,
     approved: bookings.filter((b) => b.status === "Approved").length,
     rejected: bookings.filter((b) => b.status === "Rejected").length,
   };
@@ -1262,9 +1321,8 @@ function Admin() {
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-5 sm:py-8 lg:px-8">
         <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           <AdminStat title="Total" value={stats.total} />
-          <AdminStat title="Pending" value={stats.pending} />
-          <AdminStat title="Approved" value={stats.approved} />
-          <AdminStat title="Rejected" value={stats.rejected} />
+          <AdminStat title="Pending Requests" value={stats.pending} />
+          <AdminStat title="Blocked Slots" value={stats.blocked} />
         </div>
 
         {error && (
@@ -1273,8 +1331,53 @@ function Admin() {
           </div>
         )}
 
+        <section className="mt-8 rounded-3xl border border-orange-500/20 bg-[#0c0907] p-5 sm:p-6">
+          <div className="mb-5">
+            <div className="text-xs font-black uppercase tracking-[0.25em] text-orange-400">
+              MANUAL SLOT CONTROL
+            </div>
+            <h2 className="mt-2 text-2xl font-black uppercase">
+              Block a Slot 🔒
+            </h2>
+            <p className="mt-1 text-sm text-white/40">
+              Offline booking, maintenance, owner reservation — block any slot yourself.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-[1fr_1.3fr_auto]">
+            <input
+              type="date"
+              min={new Date().toISOString().split("T")[0]}
+              value={blockDate}
+              onChange={(e) => setBlockDate(e.target.value)}
+              className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white outline-none focus:border-orange-500/50"
+            />
+
+            <select
+              value={blockSlot}
+              onChange={(e) => setBlockSlot(e.target.value)}
+              className="rounded-xl border border-white/10 bg-[#0c0907] px-4 py-3 text-white outline-none focus:border-orange-500/50"
+            >
+              <option value="">Select slot</option>
+              {SLOT_OPTIONS.map((slot) => (
+                <option key={slot.value} value={slot.value}>
+                  {slot.value} — ₹{slot.price}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={blockSlotManually}
+              disabled={blockLoading}
+              className="rounded-xl bg-orange-500 px-5 py-3 font-black text-black transition hover:bg-orange-400 disabled:opacity-50"
+            >
+              {blockLoading ? "BLOCKING..." : "BLOCK SLOT 🔒"}
+            </button>
+          </div>
+        </section>
+
         <div className="mt-6 flex flex-wrap gap-2">
-          {["All", "Pending", "Approved", "Rejected"].map((item) => (
+          {["All", "Pending", "Blocked"].map((item) => (
             <button
               key={item}
               onClick={() => setFilter(item)}
@@ -1349,32 +1452,53 @@ function Admin() {
                       </td>
 
                       <td className="px-5 py-5">
-                        <span className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-400">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-bold ${
+                            booking.status === "Blocked"
+                              ? "bg-orange-500/10 text-orange-400"
+                              : booking.status === "Pending"
+                              ? "bg-yellow-400/10 text-yellow-300"
+                              : "bg-white/5 text-white/40"
+                          }`}
+                        >
                           {booking.status}
                         </span>
                       </td>
 
                       <td className="px-5 py-5">
                         <div className="flex gap-2">
-                          {booking.status !== "Approved" && (
+                          {booking.status === "Pending" && (
                             <button
-                              onClick={() =>
-                                updateStatus(booking.id, "Approved")
-                              }
+                              onClick={async () => {
+                                const confirmed = window.confirm(
+                                  `Block ${booking.slot} on ${formatDate(booking.date)}?`
+                                );
+                                if (!confirmed) return;
+
+                                const { error } = await supabase
+                                  .from("bookings")
+                                  .update({ status: "Blocked" })
+                                  .eq("id", booking.id);
+
+                                if (error) {
+                                  setError("Could not block booking slot.");
+                                  return;
+                                }
+
+                                await loadBookings();
+                              }}
                               className="rounded-lg bg-orange-500 px-3 py-2 text-xs font-black text-black"
                             >
-                              <Check size={14} />
+                              BLOCK SLOT 🔒
                             </button>
                           )}
 
-                          {booking.status !== "Rejected" && (
+                          {booking.status === "Blocked" && (
                             <button
-                              onClick={() =>
-                                updateStatus(booking.id, "Rejected")
-                              }
-                              className="rounded-lg border border-red-400/20 px-3 py-2 text-xs text-red-300"
+                              onClick={() => unblockSlot(booking.id)}
+                              className="rounded-lg border border-lime-400/20 px-3 py-2 text-xs font-bold text-lime-300"
                             >
-                              Reject
+                              UNBLOCK
                             </button>
                           )}
 
@@ -1392,6 +1516,11 @@ function Admin() {
               </table>
             </div>
           )}
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-white/5 bg-white/[0.02] p-5 text-sm leading-6 text-white/35">
+          <strong className="text-white/60">How it works:</strong> Customer requests stay Pending. You decide when to block the slot.
+          Blocked slots disappear from the public booking dropdown. Unblock/Delete makes the slot available again.
         </div>
       </main>
     </div>
