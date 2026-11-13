@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
-  CalendarDays, Clock, MapPin, Phone,
-  Menu, X, CheckCircle2, Trophy, Zap, Users
+  CalendarDays, Clock, MapPin, Menu, X,
+  CheckCircle2, Trophy, Zap, Users
 } from "lucide-react";
 import "./index.css";
 
@@ -13,6 +14,8 @@ function App() {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [message, setMessage] = useState("");
+  const [logoTaps, setLogoTaps] = useState(0);
+  const [secretOpen, setSecretOpen] = useState(false);
 
   const slots = [
     "6:00 AM", "7:00 AM", "8:00 AM", "9:00 AM",
@@ -23,26 +26,43 @@ function App() {
     "10:00 PM"
   ];
 
+  function handleLogoTap(e) {
+    e.preventDefault();
+    const next = logoTaps + 1;
+
+    if (next >= 5) {
+      setSecretOpen(true);
+      setLogoTaps(0);
+    } else {
+      setLogoTaps(next);
+    }
+  }
+
   function bookSlot(e) {
     e.preventDefault();
 
-    if (!date || !slot || !name.trim() || !/^[6-9]\d{9}$/.test(mobile)) {
+    if (!date || !slot || !name.trim() ||
+        !/^[6-9]\d{9}$/.test(mobile)) {
       setMessage("Please enter valid booking details.");
       return;
     }
 
-    const bookings = JSON.parse(localStorage.getItem("radheBookings") || "[]");
+    const bookings = JSON.parse(
+      localStorage.getItem("radheBookings") || "[]"
+    );
 
     const exists = bookings.some(
-      b => b.date === date && b.slot === slot && b.status !== "Rejected"
+      b => b.date === date &&
+      b.slot === slot &&
+      b.status !== "Rejected"
     );
 
     if (exists) {
-      setMessage("This slot is already booked. Please select another.");
+      setMessage("This slot is already booked. Select another.");
       return;
     }
 
-    const booking = {
+    bookings.push({
       id: Date.now(),
       name,
       mobile,
@@ -50,12 +70,14 @@ function App() {
       slot,
       status: "Pending",
       createdAt: new Date().toISOString()
-    };
+    });
 
-    bookings.push(booking);
-    localStorage.setItem("radheBookings", JSON.stringify(bookings));
+    localStorage.setItem(
+      "radheBookings",
+      JSON.stringify(bookings)
+    );
 
-    setMessage("Booking request submitted! Please confirm with the venue.");
+    setMessage("Booking request submitted!");
     setName("");
     setMobile("");
     setSlot("");
@@ -64,7 +86,7 @@ function App() {
   return (
     <>
       <nav className="navbar">
-        <a href="#" className="logo">
+        <a href="#" className="logo" onClick={handleLogoTap}>
           <span className="logo-icon">R</span>
           RADHE <span>BOX CRICKET</span>
         </a>
@@ -78,6 +100,7 @@ function App() {
         </div>
 
         <a href="#booking" className="nav-btn">BOOK YOUR SLOT ↗</a>
+
         <button className="menu-btn" onClick={() => setMenu(!menu)}>
           {menu ? <X /> : <Menu />}
         </button>
@@ -163,14 +186,17 @@ function App() {
 
           <form className="booking-form" onSubmit={bookSlot}>
             <h3>BOOK YOUR SLOT</h3>
+
             <label>Your Name</label>
-            <input value={name} onChange={e => setName(e.target.value)}
+            <input value={name}
+              onChange={e => setName(e.target.value)}
               placeholder="Enter your name" required />
 
             <label>Mobile Number</label>
-            <input value={mobile} onChange={e => setMobile(e.target.value)}
-              placeholder="10-digit mobile number" inputMode="numeric"
-              maxLength="10" required />
+            <input value={mobile}
+              onChange={e => setMobile(e.target.value)}
+              placeholder="10-digit mobile number"
+              inputMode="numeric" maxLength="10" required />
 
             <label>Select Date</label>
             <input type="date" value={date}
@@ -182,11 +208,14 @@ function App() {
               {slots.map(s => (
                 <button type="button" key={s}
                   className={slot === s ? "slot active" : "slot"}
-                  onClick={() => setSlot(s)}>{s}</button>
+                  onClick={() => setSlot(s)}>
+                  {s}
+                </button>
               ))}
             </div>
 
             <p className="demo-note">DEMO BOOKING · PAYMENT AT VENUE</p>
+
             <button className="primary-btn submit-btn" type="submit">
               CONFIRM BOOKING ↗
             </button>
@@ -203,27 +232,101 @@ function App() {
         <div className="contact-actions">
           <a href="https://www.instagram.com/radhe_box_cricket/"
             target="_blank" rel="noreferrer" className="outline-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24"
-  fill="none" stroke="currentColor" strokeWidth="2"
-  strokeLinecap="round" strokeLinejoin="round">
-  <rect x="3" y="3" width="18" height="18" rx="5" />
-  <circle cx="12" cy="12" r="4" />
-  <circle cx="18" cy="6" r="1" fill="currentColor" stroke="none" />
-</svg>
-FOLLOW ON INSTAGRAM
+            FOLLOW ON INSTAGRAM
           </a>
         </div>
       </section>
 
       <footer>
-        <a href="#" className="logo">
+        <a href="#" className="logo" onClick={handleLogoTap}>
           <span className="logo-icon">R</span>
           RADHE <span>BOX CRICKET</span>
         </a>
         <p>© 2026 RADHE BOX CRICKET. ALL RIGHTS RESERVED.</p>
         <a href="#home">BACK TO TOP ↑</a>
       </footer>
+
+      {secretOpen && (
+        <SecretCricketMode
+          onClose={() => setSecretOpen(false)}
+        />
+      )}
     </>
+  );
+}
+
+function SecretCricketMode({ onClose }) {
+  const [balls, setBalls] = useState(0);
+  const [runs, setRuns] = useState(0);
+  const [result, setResult] = useState("READY TO BAT?");
+  const [gameOver, setGameOver] = useState(false);
+
+  function swing() {
+    if (gameOver) return;
+
+    const outcomes = [0, 1, 2, 4, 6, "WICKET"];
+    const hit = outcomes[Math.floor(Math.random() * outcomes.length)];
+
+    if (hit === "WICKET") {
+      setResult("💥 BOWLED! WICKET!");
+    } else {
+      setRuns(prev => prev + hit);
+      setResult(
+        hit === 6 ? "🚀 SIX! OUT OF THE PARK!" :
+        hit === 4 ? "🔥 FOUR! WHAT A SHOT!" :
+        hit === 0 ? "DOT BALL!" : `${hit} RUN!`
+      );
+    }
+
+    const nextBalls = balls + 1;
+    setBalls(nextBalls);
+
+    if (nextBalls === 6) setGameOver(true);
+  }
+
+  function replay() {
+    setBalls(0);
+    setRuns(0);
+    setResult("READY TO BAT?");
+    setGameOver(false);
+  }
+
+  return (
+    <div className="secret-overlay">
+      <div className="secret-game">
+        <button className="secret-close" onClick={onClose}>✕</button>
+
+        <p className="secret-tag">SHREE RADHE BOX CRICKET</p>
+        <h2>SECRET <span>CRICKET MODE</span></h2>
+
+        <div className="secret-score">
+          <strong>{runs}</strong>
+          <span>RUNS</span>
+          <p>{balls} / 6 BALLS</p>
+        </div>
+
+        <div className="secret-ball">🏏</div>
+        <p className="secret-result">{result}</p>
+
+        {!gameOver ? (
+          <button className="secret-swing" onClick={swing}>
+            SWING THE BAT ⚡
+          </button>
+        ) : (
+          <>
+            <h3>INNINGS COMPLETE!</h3>
+            <p>Your score: {runs} runs</p>
+            <button className="secret-swing" onClick={replay}>
+              PLAY AGAIN ↻
+            </button>
+          </>
+        )}
+
+        <p className="secret-footer">
+          ONLY THE CHAMPIONS FIND THIS.
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -233,33 +336,47 @@ function Admin() {
   const [password, setPassword] = useState("");
   const [refresh, setRefresh] = useState(0);
 
-  const bookings = JSON.parse(localStorage.getItem("radheBookings") || "[]");
+  const bookings = JSON.parse(
+    localStorage.getItem("radheBookings") || "[]"
+  );
 
   function updateBooking(id, status) {
-    const updated = bookings.map(b => b.id === id ? {...b, status} : b);
-    localStorage.setItem("radheBookings", JSON.stringify(updated));
+    const updated = bookings.map(b =>
+      b.id === id ? { ...b, status } : b
+    );
+
+    localStorage.setItem(
+      "radheBookings",
+      JSON.stringify(updated)
+    );
+
     setRefresh(refresh + 1);
   }
 
   if (!logged) {
     return (
       <div className="admin-page">
-        <form className="booking-form admin-login" onSubmit={e => {
-          e.preventDefault();
-          if (
-            (email === "owner@radhebox.demo" && password === "radhe123") ||
-            (email === "staff@radhebox.demo" && password === "staff123")
-          ) setLogged(true);
-          else alert("Invalid demo login");
-        }}>
+        <form className="booking-form admin-login"
+          onSubmit={e => {
+            e.preventDefault();
+
+            if (
+              (email === "owner@radhebox.demo" && password === "radhe123") ||
+              (email === "staff@radhebox.demo" && password === "staff123")
+            ) setLogged(true);
+            else alert("Invalid demo login");
+          }}>
           <h2>RADHE ADMIN</h2>
           <label>Email</label>
-          <input value={email} onChange={e => setEmail(e.target.value)} />
+          <input value={email}
+            onChange={e => setEmail(e.target.value)} />
           <label>Password</label>
           <input type="password" value={password}
             onChange={e => setPassword(e.target.value)} />
           <button className="primary-btn submit-btn">LOGIN ↗</button>
-          <p className="demo-note">DEMO: owner@radhebox.demo / radhe123</p>
+          <p className="demo-note">
+            DEMO: owner@radhebox.demo / radhe123
+          </p>
         </form>
       </div>
     );
@@ -269,20 +386,30 @@ function Admin() {
     <div className="admin-page">
       <div className="admin-header">
         <h2>RADHE <span>ADMIN</span></h2>
-        <button className="outline-btn" onClick={() => setLogged(false)}>LOGOUT</button>
+        <button className="outline-btn"
+          onClick={() => setLogged(false)}>LOGOUT</button>
       </div>
+
       <h3>BOOKING MANAGEMENT</h3>
       <p>Total bookings: {bookings.length}</p>
+
       {bookings.length === 0 && <p>No bookings yet.</p>}
+
       {bookings.map(b => (
         <div className="admin-booking" key={b.id}>
           <strong>{b.name}</strong>
           <p>{b.mobile} · {b.date} · {b.slot}</p>
           <p>Status: {b.status}</p>
-          {b.status === "Pending" && <>
-            <button onClick={() => updateBooking(b.id, "Approved")}>Approve</button>
-            <button onClick={() => updateBooking(b.id, "Rejected")}>Reject</button>
-          </>}
+          {b.status === "Pending" && (
+            <>
+              <button onClick={() => updateBooking(b.id, "Approved")}>
+                Approve
+              </button>
+              <button onClick={() => updateBooking(b.id, "Rejected")}>
+                Reject
+              </button>
+            </>
+          )}
         </div>
       ))}
     </div>
@@ -290,6 +417,7 @@ function Admin() {
 }
 
 const isAdmin = window.location.pathname === "/admin";
+
 createRoot(document.getElementById("root")).render(
   isAdmin ? <Admin /> : <App />
 );
