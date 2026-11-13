@@ -319,7 +319,7 @@ function SecretCricketMode({ onClose }) {
 ========================= */
 
 function App() {
-  const [introDone, setIntroDone] = useState(() => sessionStorage.getItem("radheIntroSeen") === "true");
+  const [introDone, setIntroDone] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoTaps, setLogoTaps] = useState(0);
   const [showGame, setShowGame] = useState(false);
@@ -448,7 +448,6 @@ function App() {
   ];
 
   const finishIntro = () => {
-    sessionStorage.setItem("radheIntroSeen", "true");
     setIntroDone(true);
   };
 
@@ -626,7 +625,7 @@ function App() {
 
       {/* ABOUT */}
 
-      <section id="about" className="radhe-reveal "border-t border-white/5 py-20 sm:py-24">
+      <section id="about" className="radhe-reveal border-t border-white/5 py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <div>
@@ -659,7 +658,7 @@ function App() {
 
       <section
         id="facilities"
-        className="radhe-reveal "border-t border-white/5 bg-white/[0.015] py-20 sm:py-24"
+        className="radhe-reveal border-t border-white/5 bg-white/[0.015] py-20 sm:py-24"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="mb-10 sm:mb-12">
@@ -701,7 +700,7 @@ function App() {
 
       {/* BOOKING */}
 
-      <section id="booking" className="radhe-reveal "border-t border-white/5 py-20 sm:py-24">
+      <section id="booking" className="radhe-reveal border-t border-white/5 py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
             <div>
@@ -886,7 +885,7 @@ function App() {
 
       <section
         id="contact"
-        className="radhe-reveal "border-t border-white/5 bg-[#0b0907] py-20 sm:py-24"
+        className="radhe-reveal border-t border-white/5 bg-[#0b0907] py-20 sm:py-24"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="mb-10 sm:mb-12">
