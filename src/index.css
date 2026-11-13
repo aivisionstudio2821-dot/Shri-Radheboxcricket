@@ -1018,3 +1018,253 @@ footer p, footer > a:last-child { color: #91879E; font-size: 9px; letter-spacing
     gap: 1.5rem !important;
   }
 }
+/* =========================================================
+   RADHE PREMIUM MOTION LAYER
+   Purpose: premium sports-brand feel without changing logic.
+   ========================================================= */
+:root {
+  --radhe-yellow: #DFFF00;
+  --radhe-violet: #171126;
+  --radhe-lilac: #B8A7D9;
+  --radhe-ink: #0D0917;
+}
+
+body {
+  background:
+    radial-gradient(circle at 80% 10%, rgba(184,167,217,.06), transparent 28%),
+    #0D0917;
+}
+
+.radhe-nav {
+  transition: background .35s ease, border-color .35s ease, box-shadow .35s ease;
+  box-shadow: 0 10px 35px rgba(0,0,0,.12);
+}
+.radhe-nav:hover { box-shadow: 0 14px 45px rgba(0,0,0,.28); }
+.radhe-logo-mark {
+  box-shadow: 0 0 0 rgba(223,255,0,0);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.radhe-logo-mark:hover {
+  transform: rotate(-7deg) scale(1.07);
+  box-shadow: 0 0 28px rgba(223,255,0,.22);
+}
+.radhe-nav-cta, .radhe-cta {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(223,255,0,.08);
+  transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+}
+.radhe-nav-cta::after, .radhe-cta::after {
+  content: "";
+  position: absolute;
+  inset: -80% auto -80% -30%;
+  width: 28%;
+  transform: rotate(18deg) translateX(-160%);
+  background: rgba(255,255,255,.55);
+  filter: blur(10px);
+  transition: transform .55s ease;
+}
+.radhe-nav-cta:hover, .radhe-cta:hover {
+  transform: translateY(-3px) scale(1.015);
+  box-shadow: 0 16px 40px rgba(223,255,0,.16);
+  filter: brightness(1.03);
+}
+.radhe-nav-cta:hover::after, .radhe-cta:hover::after { transform: rotate(18deg) translateX(620%); }
+
+.radhe-hero {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 78% 38%, rgba(184,167,217,.11), transparent 26%),
+    radial-gradient(circle at 60% 80%, rgba(223,255,0,.045), transparent 24%);
+}
+.radhe-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .16;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, black, transparent 72%);
+  animation: radhe-grid-drift 18s linear infinite;
+}
+.radhe-hero-glow { animation: radhe-pulse 5s ease-in-out infinite; }
+.radhe-hero-grid { animation: radhe-enter-up .8s cubic-bezier(.2,.8,.2,1) both; }
+.radhe-eyebrow { animation: radhe-fade-in .7s .12s ease both; }
+.radhe-title { text-shadow: 0 12px 60px rgba(0,0,0,.32); animation: radhe-title-in .85s .1s cubic-bezier(.2,.8,.2,1) both; }
+.radhe-hero-card-wrap { animation: radhe-card-in 1s .22s cubic-bezier(.2,.8,.2,1) both; }
+.radhe-hero-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(184,167,217,.09), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)),
+    #1A1427 !important;
+  box-shadow: 0 35px 90px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), border-color .35s ease;
+}
+.radhe-hero-card:hover { transform: translateY(-8px) rotateX(1deg) rotateY(-1deg); border-color: rgba(223,255,0,.24); }
+.radhe-hero-card::before {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  right: -100px;
+  top: -110px;
+  border-radius: 50%;
+  background: rgba(223,255,0,.08);
+  filter: blur(2px);
+  animation: radhe-orb 6s ease-in-out infinite;
+}
+.radhe-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(223,255,0,.75), transparent);
+  opacity: .65;
+  animation: radhe-scan 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.radhe-live-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform .3s ease, border-color .3s ease, background .3s ease;
+}
+.radhe-live-card:hover { transform: translateY(-2px); border-color: rgba(223,255,0,.25); background: rgba(223,255,0,.08); }
+
+/* Make the existing stats feel like a scoreboard. */
+.radhe-hero-card .grid > div {
+  position: relative;
+  overflow: hidden;
+  transition: transform .28s ease, border-color .28s ease, background .28s ease;
+}
+.radhe-hero-card .grid > div:hover {
+  transform: translateY(-4px);
+  border-color: rgba(184,167,217,.24);
+  background: rgba(184,167,217,.06);
+}
+
+/* Section reveal feel for the existing page sections. */
+#about, #facilities, #booking, #contact {
+  position: relative;
+}
+#about::after, #facilities::after, #booking::after, #contact::after {
+  content: "";
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184,167,217,.18), transparent);
+}
+
+/* Facility cards: premium lift + glow. */
+.radhe-facility-grid > * {
+  transition: transform .32s cubic-bezier(.2,.8,.2,1), border-color .32s ease, box-shadow .32s ease;
+}
+.radhe-facility-grid > *:hover {
+  transform: translateY(-7px);
+  border-color: rgba(184,167,217,.28) !important;
+  box-shadow: 0 22px 55px rgba(0,0,0,.24);
+}
+
+@keyframes radhe-enter-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes radhe-card-in {
+  from { opacity: 0; transform: translateX(30px) scale(.98); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes radhe-title-in {
+  from { opacity: 0; transform: translateY(18px); letter-spacing: .03em; }
+  to { opacity: 1; transform: translateY(0); letter-spacing: -.02em; }
+}
+@keyframes radhe-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes radhe-pulse {
+  0%,100% { opacity: .55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+@keyframes radhe-orb {
+  0%,100% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(-25px,28px,0); }
+}
+@keyframes radhe-scan {
+  0%,100% { transform: translateY(0); opacity: 0; }
+  15% { opacity: .7; }
+  75% { opacity: .45; }
+  100% { transform: translateY(420px); opacity: 0; }
+}
+@keyframes radhe-grid-drift {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(52px,52px,0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+@media (max-width: 800px) {
+  .radhe-hero-grid { animation-duration: .65s; }
+  .radhe-hero-card:hover { transform: none; }
+  .radhe-hero::before { background-size: 34px 34px; }
+}
+
+/* Premium CTA contrast fix */
+.primary-btn,
+.nav-btn,
+button.primary-btn,
+a.primary-btn,
+.book-btn,
+.booking-cta {
+  color: #000000 !important;
+}
+
+/* ===== RADHE CINEMATIC CRICKET BALL ===== */
+.radhe-cinematic-intro{
+  position:fixed;inset:0;z-index:9999;background:#030207;
+  display:grid;place-items:center;overflow:hidden;
+  animation:radheIntroOut .7s 2.15s forwards;pointer-events:none;
+}
+.radhe-intro-ball,.radhe-scroll-cricket-ball{
+  position:fixed;width:68px;height:68px;border-radius:50%;
+  background:
+    radial-gradient(circle at 29% 22%,rgba(255,255,255,.75) 0 3%,transparent 7%),
+    radial-gradient(ellipse at 50% 50%,#c51f2a 0 43%,#8b101a 44% 68%,#35050a 70% 100%);
+  box-shadow:inset -14px -14px 20px #320006,inset 5px 5px 8px rgba(255,255,255,.18),0 0 28px rgba(223,255,0,.35);
+}
+.radhe-intro-ball{left:-100px;top:52%;animation:radheBallStrike 1.35s cubic-bezier(.12,.8,.18,1) forwards;}
+.radhe-scroll-cricket-ball{right:7%;top:28%;z-index:80;pointer-events:none;transition:opacity .2s ease;}
+.radhe-ball-seam{position:absolute;inset:7px 20px;border:2px dashed rgba(255,255,255,.9);border-radius:50%;transform:rotate(-28deg);filter:drop-shadow(0 1px 1px #500);}
+.radhe-intro-copy{position:relative;z-index:2;text-align:center;opacity:0;animation:radheCopyIn .8s 1.55s forwards;}
+.radhe-intro-copy small{display:block;color:#b8a7d9;font-weight:800;letter-spacing:5px;font-size:11px;margin-bottom:18px;}
+.radhe-intro-copy strong{display:block;color:#f5f3fa;font-size:clamp(48px,9vw,120px);line-height:.84;letter-spacing:-6px;}
+.radhe-intro-copy em{font-style:normal;color:#dfff00;}
+.radhe-intro-flash{position:absolute;inset:0;background:#fff;opacity:0;animation:radheFlash .1s 1.2s;}
+@keyframes radheBallStrike{
+  0%{transform:translateX(0) rotate(0)}
+  72%{transform:translateX(58vw) rotate(900deg)}
+  100%{transform:translateX(54vw) rotate(1080deg) scale(.9)}
+}
+@keyframes radheCopyIn{to{opacity:1}}
+@keyframes radheFlash{50%{opacity:.18}}
+@keyframes radheIntroOut{to{opacity:0;visibility:hidden}}
+@media(max-width:700px){
+  .radhe-intro-ball,.radhe-scroll-cricket-ball{width:46px;height:46px;}
+  .radhe-intro-copy strong{letter-spacing:-3px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .radhe-cinematic-intro{display:none}.radhe-scroll-cricket-ball{display:none;}
+}
