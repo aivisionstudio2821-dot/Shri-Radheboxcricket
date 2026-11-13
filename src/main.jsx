@@ -413,6 +413,13 @@ Price: ₹${selectedSlot?.price}
     },
   ];
 
+  const localFaqs = [
+    { question: "Where is Shree Radhe Box Cricket located?", answer: "Shree Radhe Box Cricket is at Radhe Farm in the Vasna area of Ahmedabad, Gujarat." },
+    { question: "How can I book box cricket in Vasna?", answer: "Choose a date, select an available one-hour slot, enter your details and submit the booking request. WhatsApp opens automatically for confirmation." },
+    { question: "How much does box cricket cost?", answer: "Day slots are ₹800 and night slots are ₹1100, subject to current availability." },
+    { question: "Is night box cricket available in Ahmedabad?", answer: "Yes. Evening and night slots are available. Check the booking form for current availability." }
+  ];
+
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-[#080706] text-white">
       {/* NAVBAR */}
@@ -654,6 +661,33 @@ Price: ₹${selectedSlot?.price}
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* LOCAL SEO */}
+      <section id="box-cricket-vasna" className="border-t border-white/5 bg-[#0b0907] py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
+          <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+            <div>
+              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs">BOX CRICKET IN VASNA</div>
+              <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">SHREE RADHE BOX CRICKET<br /><span className="text-orange-500">VASNA, AHMEDABAD.</span></h2>
+              <p className="mt-6 max-w-2xl text-base leading-8 text-white/55 sm:text-lg">Looking for box cricket in Vasna, Ahmedabad? Shree Radhe Box Cricket at Radhe Farm is a local venue for friends, teams, practice sessions and competitive matches. Choose a one-hour slot, bring your squad and book your game online.</p>
+              <p className="mt-4 max-w-2xl leading-7 text-white/40">The venue is a cricket destination for players around Vasna and nearby Ahmedabad areas. Check the booking section for current slot availability and pricing.</p>
+              <div className="mt-7 flex flex-wrap gap-2">{["Box Cricket Vasna","Box Cricket Ahmedabad","Cricket Turf Ahmedabad","Box Cricket Booking"].map(tag=><span key={tag} className="rounded-full border border-orange-500/20 bg-orange-500/5 px-3 py-2 text-xs font-bold text-orange-300">{tag}</span>)}</div>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-[#100d0a] p-5 sm:p-7">
+              <div className="text-xs font-black uppercase tracking-[0.25em] text-orange-400">QUICK INFO</div>
+              <div className="mt-6 space-y-4">{[["Venue","Shree Radhe Box Cricket"],["Area","Vasna, Ahmedabad, Gujarat"],["Location","Radhe Farm"],["Format","One-hour box cricket slots"],["Day Price","₹800"],["Night Price","₹1100"]].map(([label,value])=><div key={label} className="flex items-start justify-between gap-4 border-b border-white/5 pb-4"><span className="text-sm text-white/35">{label}</span><span className="text-right text-sm font-bold">{value}</span></div>)}</div>
+              <a href="#booking" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-4 text-sm font-black text-black hover:bg-orange-400">CHECK AVAILABLE SLOTS <ArrowRight size={17} /></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="border-t border-white/5 py-20 sm:py-24">
+        <div className="mx-auto max-w-4xl px-4 sm:px-5 lg:px-8">
+          <div className="mb-10 text-center sm:mb-12"><div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs">FREQUENTLY ASKED QUESTIONS</div><h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">BOX CRICKET <span className="text-orange-500">FAQ.</span></h2></div>
+          <div className="space-y-3">{localFaqs.map(item=><details key={item.question} className="group rounded-2xl border border-white/10 bg-[#0c0907] p-5"><summary className="cursor-pointer list-none pr-6 text-sm font-black sm:text-base">{item.question}</summary><p className="mt-3 text-sm leading-7 text-white/45">{item.answer}</p></details>)}</div>
         </div>
       </section>
 
@@ -953,6 +987,8 @@ Price: ₹${selectedSlot?.price}
           </div>
         </div>
       </section>
+
+      <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",mainEntity:localFaqs.map(item=>({"@type":"Question",name:item.question,acceptedAnswer:{"@type":"Answer",text:item.answer}}))})}</script>
 
       {/* FOOTER */}
 
