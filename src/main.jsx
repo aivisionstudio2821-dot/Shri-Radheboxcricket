@@ -6,7 +6,6 @@ import {
   Check,
   ChevronDown,
   Clock3,
-  Instagram,
   MapPin,
   Menu,
   Phone,
