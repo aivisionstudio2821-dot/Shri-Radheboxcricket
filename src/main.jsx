@@ -18,14 +18,15 @@ import {
 import { createClient } from "@supabase/supabase-js";
 import "./index.css";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const supabaseUrl =
+  import.meta.env.VITE_SUPABASE_URL ||
+  "https://pqskcjtqjfnarjoutaxa.supabase.co";
 
-const supabase =
-  supabaseUrl && supabaseKey
-    ? createClient(supabaseUrl, supabaseKey)
-    : null;
+const supabaseKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  "sb_publishable_fr_NvH33T_g7PBwywLsy2A_SD9-e0WW";
 
+const supabase = createClient(supabaseUrl, supabaseKey);
 const ADMIN_KEY = "radheAdminLogged";
 
 const LOCATION_URL =
