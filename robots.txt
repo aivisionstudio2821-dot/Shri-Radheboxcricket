@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shri-radheboxcricket-p9yz.vercel.app/sitemap.xml
