@@ -18,4 +18,4 @@ Staff: `staff@radhebox.demo` / `staff123`
 - `/book` booking
 - `/admin` admin dashboard
 
-Data is stored in browser localStorage and is clearly demo data. The app is structured so the persistence layer can later be replaced with Supabase.
+Latest deployment trigger
