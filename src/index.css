@@ -1377,3 +1377,15 @@ a.primary-btn,
   .cricket-cursor{display:none}
   .radhe-reveal{animation:none}
 }
+
+
+/* FINAL CTA CONTRAST FIX */
+.primary-btn,
+.nav-btn,
+button.primary-btn,
+a.primary-btn,
+.book-btn,
+.booking-cta,
+.submit-btn {
+  color: #000 !important;
+}
