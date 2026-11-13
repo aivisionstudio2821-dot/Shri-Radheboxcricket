@@ -323,6 +323,9 @@ Players: ${form.players || "Not specified"}
 Price: ₹${selectedSlot?.price}
 
 Please confirm my booking. 🏏`;
+      setMessage(
+  `Booking request submitted! ₹${selectedSlot?.price} ${selectedSlot?.type?.toLowerCase()} slot selected.`
+);
 
 window.open(
   `https://wa.me/918160885601?text=${encodeURIComponent(whatsappMessage)}`,
