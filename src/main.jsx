@@ -828,7 +828,7 @@ function App() {
               rel="noreferrer"
               className="rounded-3xl border border-white/10 bg-[#090b09] p-7 transition hover:border-lime-400/30"
             >
-              <Instagram className="mb-5 text-lime-400" />
+              <Sparkles className="mb-5 text-lime-400" />
               <div className="text-xs font-bold uppercase tracking-widest text-white/30">
                 INSTAGRAM
               </div>
