@@ -172,3 +172,95 @@ footer p, footer > a:last-child { color: #9da196; font-size: 9px; letter-spacing
   .stats span { font-size: 8px; text-align: center; }
   footer { flex-direction: column; text-align: center; }
   }
+
+.secret-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle, #1b2b13, #050705 75%);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.secret-game {
+  width: 100%;
+  max-width: 430px;
+  position: relative;
+  text-align: center;
+  padding: 35px 22px;
+  background: #10160e;
+  border: 1px solid #b8f528;
+  box-shadow: 0 0 45px #b8f52830;
+  border-radius: 18px;
+  color: white;
+}
+
+.secret-close {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 23px;
+}
+
+.secret-tag, .secret-footer {
+  color: #b8f528;
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-weight: 900;
+}
+
+.secret-game h2 { font-size: 34px; margin: 22px 0; }
+.secret-game h2 span { color: #b8f528; }
+
+.secret-score {
+  background: #1b2517;
+  padding: 18px;
+  border-radius: 12px;
+}
+
+.secret-score strong {
+  display: block;
+  font-size: 65px;
+  color: #b8f528;
+}
+
+.secret-score span, .secret-score p {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #b8bdae;
+}
+
+.secret-ball {
+  font-size: 65px;
+  margin: 22px;
+  animation: ballFloat 1.5s infinite ease-in-out;
+}
+
+.secret-result {
+  min-height: 28px;
+  color: #b8f528;
+  font-weight: 900;
+}
+
+.secret-swing {
+  width: 100%;
+  padding: 17px;
+  background: #b8f528;
+  color: #090b09;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-top: 12px;
+}
+
+.secret-footer { color: #929989; margin-top: 25px; }
+
+@keyframes ballFloat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-12px) rotate(20deg); }
+}
