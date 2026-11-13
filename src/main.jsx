@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowRight,
-  CalendarDays,
   Check,
   ChevronDown,
   Clock3,
@@ -46,6 +45,7 @@ const QR_URL = `https://quickchart.io/qr?text=${encodeURIComponent(
 const formatHour = (hour) => {
   const suffix = hour >= 12 ? "PM" : "AM";
   const displayHour = hour % 12 || 12;
+
   return `${String(displayHour).padStart(2, "0")}:00 ${suffix}`;
 };
 
@@ -177,6 +177,7 @@ function SecretCricketMode({ onClose }) {
             <div className="text-xs uppercase tracking-widest text-white/40">
               Score
             </div>
+
             <div className="text-3xl font-black text-orange-500">
               {score}
             </div>
@@ -186,6 +187,7 @@ function SecretCricketMode({ onClose }) {
             <div className="text-xs uppercase tracking-widest text-white/40">
               Ball
             </div>
+
             <div className="text-2xl font-black">{ball}/6</div>
           </div>
         </div>
@@ -351,37 +353,38 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#080706] text-white">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#080706] text-white">
       {/* NAVBAR */}
 
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#080706]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#080706]/95 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
           <button
             onClick={() => setLogoTaps((prev) => prev + 1)}
-            className="flex items-center gap-3"
+            className="flex min-w-0 items-center gap-2 sm:gap-3"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 text-black">
-              <Trophy size={22} />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-black sm:h-10 sm:w-10">
+              <Trophy size={20} />
             </div>
 
-            <div>
-              <div className="text-sm font-black tracking-[0.15em]">
+            <div className="text-left">
+              <div className="text-[11px] font-black tracking-[0.12em] sm:text-sm sm:tracking-[0.15em]">
                 RADHE
               </div>
 
-              <div className="text-[10px] font-bold tracking-[0.3em] text-orange-400">
+              <div className="text-[7px] font-bold tracking-[0.22em] text-orange-400 sm:text-[10px] sm:tracking-[0.3em]">
                 BOX CRICKET
               </div>
             </div>
           </button>
 
-          <div className="hidden items-center gap-8 md:flex">
+          {/* DESKTOP NAV */}
+          <div className="hidden items-center gap-5 lg:flex">
             {["home", "about", "facilities", "booking", "contact"].map(
               (item) => (
                 <a
                   key={item}
                   href={`#${item}`}
-                  className="text-sm capitalize text-white/60 hover:text-white"
+                  className="text-sm capitalize text-white/60 transition hover:text-white"
                 >
                   {item}
                 </a>
@@ -390,35 +393,46 @@ function App() {
 
             <a
               href="#booking"
-              className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400"
+              className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400"
             >
               BOOK NOW
             </a>
           </div>
 
+          {/* MOBILE MENU BUTTON */}
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="rounded-xl border border-white/10 p-2 md:hidden"
+            aria-label="Open menu"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] lg:hidden"
           >
-            {menuOpen ? <X /> : <Menu />}
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
+        {/* MOBILE MENU */}
         {menuOpen && (
-          <div className="border-t border-white/10 bg-[#0b0908] px-5 py-5 md:hidden">
-            <div className="flex flex-col gap-4">
+          <div className="border-t border-white/10 bg-[#0b0908] px-4 py-4 lg:hidden">
+            <div className="mx-auto flex max-w-7xl flex-col gap-1">
               {["home", "about", "facilities", "booking", "contact"].map(
                 (item) => (
                   <a
                     key={item}
                     href={`#${item}`}
                     onClick={() => setMenuOpen(false)}
-                    className="capitalize"
+                    className="rounded-xl px-4 py-3 text-sm font-bold capitalize text-white/70 transition hover:bg-white/5 hover:text-white"
                   >
                     {item}
                   </a>
                 )
               )}
+
+              <a
+                href="#booking"
+                onClick={() => setMenuOpen(false)}
+                className="mt-2 rounded-xl bg-orange-500 px-4 py-3 text-center text-sm font-black text-black"
+              >
+                BOOK NOW
+              </a>
             </div>
           </div>
         )}
@@ -432,38 +446,38 @@ function App() {
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(249,115,22,0.15),transparent_35%)]" />
 
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:px-8">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-2 lg:gap-12 lg:px-8">
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-orange-400">
-              <Sparkles size={14} />
+            <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-orange-400 sm:px-4 sm:text-xs sm:tracking-[0.2em]">
+              <Sparkles size={13} />
               Radhe Farm • Ahmedabad
             </div>
 
-            <h1 className="text-6xl font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
+            <h1 className="text-[3.5rem] font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
               PLAY HARD.
               <br />
               PLAY <span className="text-orange-500">RADHE.</span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-8 text-white/55">
+            <p className="mt-6 max-w-xl text-base leading-7 text-white/55 sm:mt-7 sm:text-lg sm:leading-8">
               Premium box cricket at Radhe Farm. Book your one-hour slot and
               bring your team to the game.
             </p>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
               <a
                 href="#booking"
-                className="inline-flex items-center justify-center gap-3 rounded-xl bg-orange-500 px-7 py-4 font-black text-black hover:bg-orange-400"
+                className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-orange-500 px-7 py-4 text-sm font-black text-black hover:bg-orange-400"
               >
                 BOOK YOUR SLOT
-                <ArrowRight size={19} />
+                <ArrowRight size={18} />
               </a>
 
               <a
                 href={LOCATION_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-7 py-4 font-bold hover:bg-white/5"
+                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border border-white/10 px-7 py-4 text-sm font-bold hover:bg-white/5"
               >
                 <MapPin size={18} />
                 GET DIRECTIONS
@@ -472,32 +486,32 @@ function App() {
           </div>
 
           <div className="relative">
-            <div className="rounded-[32px] border border-white/10 bg-[#110d09] p-8 shadow-2xl">
-              <div className="mb-12 flex items-center justify-between">
+            <div className="rounded-[24px] border border-white/10 bg-[#110d09] p-5 shadow-2xl sm:rounded-[32px] sm:p-8">
+              <div className="mb-8 flex items-center justify-between sm:mb-12">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-[0.3em] text-white/30">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/30 sm:text-xs sm:tracking-[0.3em]">
                     RADHE FARM
                   </div>
 
-                  <div className="mt-1 text-2xl font-black uppercase italic">
+                  <div className="mt-1 text-xl font-black uppercase italic sm:text-2xl">
                     GAME ON
                   </div>
                 </div>
 
-                <Trophy className="text-orange-500" size={38} />
+                <Trophy className="text-orange-500" size={32} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <Stat value="18" label="Daily Slots" />
                 <Stat value="1 HR" label="Each Slot" />
                 <Stat value="₹800" label="Day" />
                 <Stat value="₹1100" label="Night" />
               </div>
 
-              <div className="mt-4 rounded-2xl border border-orange-500/10 bg-orange-500/5 p-5">
+              <div className="mt-3 rounded-2xl border border-orange-500/10 bg-orange-500/5 p-4 sm:mt-4 sm:p-5">
                 <div className="flex items-center gap-3">
                   <div className="h-3 w-3 animate-pulse rounded-full bg-orange-500" />
-                  <span className="text-sm font-bold">
+                  <span className="text-xs font-bold sm:text-sm">
                     BOOKINGS OPEN NOW
                   </span>
                 </div>
@@ -509,15 +523,15 @@ function App() {
 
       {/* ABOUT */}
 
-      <section id="about" className="border-t border-white/5 py-24">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2">
+      <section id="about" className="border-t border-white/5 py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <div>
-              <div className="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
+              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
                 ABOUT THE VENUE
               </div>
 
-              <h2 className="text-4xl font-black uppercase sm:text-5xl">
+              <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
                 MORE THAN
                 <br />
                 JUST A <span className="text-orange-500">GAME.</span>
@@ -525,12 +539,12 @@ function App() {
             </div>
 
             <div className="text-white/55">
-              <p className="text-lg leading-8">
+              <p className="text-base leading-7 sm:text-lg sm:leading-8">
                 Radhe Box Cricket at Radhe Farm is made for teams, friends,
                 tournaments and anyone who loves cricket.
               </p>
 
-              <p className="mt-5 leading-7">
+              <p className="mt-4 leading-7 sm:mt-5">
                 Pick your slot, bring your squad and let the game begin.
               </p>
             </div>
@@ -542,37 +556,37 @@ function App() {
 
       <section
         id="facilities"
-        className="border-t border-white/5 bg-white/[0.015] py-24"
+        className="border-t border-white/5 bg-white/[0.015] py-20 sm:py-24"
       >
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="mb-12">
-            <div className="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
+        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
+          <div className="mb-10 sm:mb-12">
+            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
               THE EXPERIENCE
             </div>
 
-            <h2 className="text-4xl font-black uppercase sm:text-5xl">
+            <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
               BUILT FOR <span className="text-orange-500">PLAY.</span>
             </h2>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             {facilities.map((item) => {
               const Icon = item.icon;
 
               return (
                 <div
                   key={item.title}
-                  className="group rounded-3xl border border-white/10 bg-[#0c0907] p-7 hover:border-orange-500/30"
+                  className="group rounded-2xl border border-white/10 bg-[#0c0907] p-5 transition hover:border-orange-500/30 sm:rounded-3xl sm:p-7"
                 >
-                  <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-black">
-                    <Icon size={23} />
+                  <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-black sm:mb-8 sm:h-12 sm:w-12 sm:rounded-2xl">
+                    <Icon size={22} />
                   </div>
 
-                  <h3 className="text-xl font-black uppercase">
+                  <h3 className="text-lg font-black uppercase sm:text-xl">
                     {item.title}
                   </h3>
 
-                  <p className="mt-3 text-sm leading-6 text-white/45">
+                  <p className="mt-2 text-sm leading-6 text-white/45">
                     {item.text}
                   </p>
                 </div>
@@ -584,26 +598,26 @@ function App() {
 
       {/* BOOKING */}
 
-      <section id="booking" className="border-t border-white/5 py-24">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+      <section id="booking" className="border-t border-white/5 py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
             <div>
-              <div className="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
+              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
                 RESERVE YOUR TURF
               </div>
 
-              <h2 className="text-4xl font-black uppercase sm:text-5xl">
+              <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
                 BOOK
                 <br />
                 YOUR <span className="text-orange-500">GAME.</span>
               </h2>
 
-              <p className="mt-6 max-w-md leading-7 text-white/45">
+              <p className="mt-5 max-w-md text-sm leading-7 text-white/45 sm:mt-6 sm:text-base">
                 Choose a date and one-hour slot. Day slots are ₹800 and
                 evening/night slots are ₹1100.
               </p>
 
-              <div className="mt-8 grid grid-cols-2 gap-3">
+              <div className="mt-7 grid grid-cols-2 gap-3 sm:mt-8">
                 <PriceCard
                   title="DAY"
                   price="₹800"
@@ -617,13 +631,16 @@ function App() {
                 />
               </div>
 
-              <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+              <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.02] p-4 sm:mt-5 sm:p-5">
                 <div className="flex items-center gap-3">
-                  <Clock3 className="text-orange-500" size={20} />
+                  <Clock3 className="shrink-0 text-orange-500" size={20} />
 
                   <div>
-                    <div className="font-bold">18 one-hour slots</div>
-                    <div className="text-sm text-white/40">
+                    <div className="text-sm font-bold sm:text-base">
+                      18 one-hour slots
+                    </div>
+
+                    <div className="text-xs text-white/40 sm:text-sm">
                       06:00 AM to 12:00 AM
                     </div>
                   </div>
@@ -633,9 +650,9 @@ function App() {
 
             <form
               onSubmit={submitBooking}
-              className="rounded-3xl border border-white/10 bg-[#0c0907] p-6 sm:p-8"
+              className="rounded-2xl border border-white/10 bg-[#0c0907] p-4 sm:rounded-3xl sm:p-8"
             >
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
                 <Input
                   label="Name *"
                   value={form.name}
@@ -652,7 +669,7 @@ function App() {
                 />
 
                 <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
+                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/40 sm:text-xs">
                     Date *
                   </label>
 
@@ -661,7 +678,7 @@ function App() {
                     min={new Date().toISOString().split("T")[0]}
                     value={form.date}
                     onChange={(e) => updateForm("date", e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-[#11100e] px-4 py-4 text-white outline-none focus:border-orange-500"
+                    className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none focus:border-orange-500 sm:px-4 sm:py-4"
                   />
                 </div>
 
@@ -674,7 +691,7 @@ function App() {
                 />
 
                 <div className="sm:col-span-2">
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
+                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/40 sm:text-xs">
                     Select Slot *
                   </label>
 
@@ -682,7 +699,7 @@ function App() {
                     <select
                       value={form.slot}
                       onChange={(e) => updateForm("slot", e.target.value)}
-                      className="w-full appearance-none rounded-xl border border-white/10 bg-[#11100e] px-4 py-4 pr-12 text-white outline-none focus:border-orange-500"
+                      className="box-border w-full min-w-0 appearance-none rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 pr-10 text-sm text-white outline-none focus:border-orange-500 sm:px-4 sm:py-4"
                     >
                       <option value="" className="bg-[#11100e] text-white">
                         Select your slot
@@ -700,37 +717,37 @@ function App() {
                     </select>
 
                     <ChevronDown
-                      size={18}
-                      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-orange-400"
+                      size={17}
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-orange-400 sm:right-4"
                     />
                   </div>
                 </div>
               </div>
 
               {selectedSlot && (
-                <div className="mt-5 flex items-center justify-between rounded-2xl border border-orange-500/20 bg-orange-500/5 p-5">
-                  <div>
-                    <div className="text-xs font-bold uppercase tracking-widest text-orange-400">
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4 sm:mt-5 sm:p-5">
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
                       Selected Slot
                     </div>
 
-                    <div className="mt-1 font-bold">
+                    <div className="mt-1 truncate text-sm font-bold sm:text-base">
                       {selectedSlot.value}
                     </div>
 
-                    <div className="mt-1 text-xs text-white/40">
+                    <div className="mt-1 text-[10px] text-white/40 sm:text-xs">
                       {selectedSlot.type === "DAY"
                         ? "Day Booking"
                         : "Night Booking"}
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="text-xs uppercase tracking-widest text-white/30">
+                  <div className="shrink-0 text-right">
+                    <div className="text-[9px] uppercase tracking-widest text-white/30">
                       PRICE
                     </div>
 
-                    <div className="text-3xl font-black text-orange-500">
+                    <div className="text-2xl font-black text-orange-500 sm:text-3xl">
                       ₹{selectedSlot.price}
                     </div>
                   </div>
@@ -738,7 +755,7 @@ function App() {
               )}
 
               {message && (
-                <div className="mt-5 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-sm text-orange-300">
+                <div className="mt-4 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-sm text-orange-300 sm:mt-5">
                   {message}
                 </div>
               )}
@@ -746,7 +763,7 @@ function App() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-orange-500 px-6 py-4 font-black text-black hover:bg-orange-400 disabled:opacity-50"
+                className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl bg-orange-500 px-6 py-4 text-sm font-black text-black hover:bg-orange-400 disabled:opacity-50 sm:mt-6"
               >
                 {loading ? (
                   "SUBMITTING..."
@@ -762,38 +779,40 @@ function App() {
         </div>
       </section>
 
-      {/* LOCATION */}
+      {/* LOCATION / CONTACT */}
 
       <section
         id="contact"
-        className="border-t border-white/5 bg-[#0b0907] py-24"
+        className="border-t border-white/5 bg-[#0b0907] py-20 sm:py-24"
       >
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="mb-12">
-            <div className="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
+        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
+          <div className="mb-10 sm:mb-12">
+            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
               FIND US
             </div>
 
-            <h2 className="text-4xl font-black uppercase sm:text-5xl">
+            <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
               COME PLAY <span className="text-orange-500">WITH US.</span>
             </h2>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-            <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+            <div className="grid gap-3 sm:grid-cols-2 sm:gap-5">
               <a
                 href={`tel:${PHONE}`}
-                className="rounded-3xl border border-white/10 bg-[#100d0a] p-7 transition hover:border-orange-500/40"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:rounded-3xl sm:p-7"
               >
-                <Phone className="mb-5 text-orange-500" size={26} />
+                <Phone className="mb-5 text-orange-500" size={24} />
 
-                <div className="text-xs font-bold uppercase tracking-widest text-white/30">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   OWNER / CALL
                 </div>
 
-                <div className="mt-2 text-xl font-black">{OWNER}</div>
+                <div className="mt-2 text-lg font-black sm:text-xl">
+                  {OWNER}
+                </div>
 
-                <div className="mt-1 text-orange-400">
+                <div className="mt-1 text-sm text-orange-400">
                   {PHONE}
                 </div>
               </a>
@@ -802,19 +821,19 @@ function App() {
                 href={LOCATION_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-3xl border border-white/10 bg-[#100d0a] p-7 transition hover:border-orange-500/40"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:rounded-3xl sm:p-7"
               >
-                <MapPin className="mb-5 text-orange-500" size={26} />
+                <MapPin className="mb-5 text-orange-500" size={24} />
 
-                <div className="text-xs font-bold uppercase tracking-widest text-white/30">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   LOCATION
                 </div>
 
-                <div className="mt-2 text-xl font-black">
+                <div className="mt-2 text-lg font-black sm:text-xl">
                   Radhe Farm
                 </div>
 
-                <div className="mt-1 text-orange-400">
+                <div className="mt-1 text-sm text-orange-400">
                   Open in Google Maps →
                 </div>
               </a>
@@ -823,44 +842,42 @@ function App() {
                 href="https://instagram.com/radhe_box_cricket"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-3xl border border-white/10 bg-[#100d0a] p-7 transition hover:border-orange-500/40 sm:col-span-2"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:col-span-2 sm:rounded-3xl sm:p-7"
               >
-                <Sparkles className="mb-5 text-orange-500" size={26} />
+                <Sparkles className="mb-5 text-orange-500" size={24} />
 
-                <div className="text-xs font-bold uppercase tracking-widest text-white/30">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   INSTAGRAM
                 </div>
 
-                <div className="mt-2 text-xl font-black">
+                <div className="mt-2 text-lg font-black sm:text-xl">
                   @radhe_box_cricket
                 </div>
               </a>
             </div>
 
-            {/* LOCATION QR */}
+            {/* QR */}
 
-            <div className="rounded-3xl border border-orange-500/20 bg-[#100d0a] p-7 text-center">
-              <div className="text-xs font-bold uppercase tracking-[0.25em] text-orange-400">
+            <div className="rounded-2xl border border-orange-500/20 bg-[#100d0a] p-5 text-center sm:rounded-3xl sm:p-7">
+              <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs">
                 SCAN FOR LOCATION
               </div>
 
-              <div className="mx-auto mt-5 flex w-fit rounded-2xl bg-white p-3">
+              <div className="mx-auto mt-5 flex w-fit rounded-2xl bg-white p-2.5 sm:p-3">
                 <img
                   src={QR_URL}
                   alt="Radhe Farm Google Maps QR Code"
-                  className="h-52 w-52"
+                  className="h-48 w-48 sm:h-52 sm:w-52"
                 />
               </div>
 
-              <div className="mt-5 font-black">
-                RADHE FARM
-              </div>
+              <div className="mt-5 font-black">RADHE FARM</div>
 
               <a
                 href={LOCATION_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400"
+                className="mt-4 inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400"
               >
                 <MapPin size={16} />
                 GET DIRECTIONS
@@ -872,8 +889,8 @@ function App() {
 
       {/* FOOTER */}
 
-      <footer className="border-t border-white/5 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 text-sm text-white/30 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+      <footer className="border-t border-white/5 py-7">
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 text-xs text-white/30 sm:px-5 sm:text-sm lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
             © {new Date().getFullYear()} Radhe Box Cricket • Radhe Farm
           </div>
@@ -896,7 +913,7 @@ function App() {
 }
 
 /* =========================
-   SMALL COMPONENTS
+   INPUT
 ========================= */
 
 function Input({
@@ -907,8 +924,8 @@ function Input({
   type = "text",
 }) {
   return (
-    <div>
-      <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/40">
+    <div className="min-w-0">
+      <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/40 sm:text-xs">
         {label}
       </label>
 
@@ -917,38 +934,44 @@ function Input({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-white/10 bg-[#11100e] px-4 py-4 text-white outline-none placeholder:text-white/20 focus:border-orange-500"
+        className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-orange-500 sm:px-4 sm:py-4"
       />
     </div>
   );
 }
 
+/* =========================
+   PRICE CARD
+========================= */
+
 function PriceCard({ title, price, time }) {
   return (
-    <div className="rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4">
-      <div className="text-xs font-bold uppercase tracking-widest text-orange-400">
+    <div className="min-w-0 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4">
+      <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
         {title}
       </div>
 
-      <div className="mt-1 text-2xl font-black">
-        {price}
-      </div>
+      <div className="mt-1 text-2xl font-black">{price}</div>
 
-      <div className="mt-1 text-xs text-white/40">
+      <div className="mt-1 text-[10px] text-white/40 sm:text-xs">
         {time}
       </div>
     </div>
   );
 }
 
+/* =========================
+   STAT
+========================= */
+
 function Stat({ value, label }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-      <div className="text-3xl font-black text-orange-500">
+    <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
+      <div className="text-2xl font-black text-orange-500 sm:text-3xl">
         {value}
       </div>
 
-      <div className="mt-1 text-xs uppercase tracking-widest text-white/35">
+      <div className="mt-1 text-[9px] uppercase tracking-widest text-white/35 sm:text-xs">
         {label}
       </div>
     </div>
@@ -1076,8 +1099,8 @@ function Admin() {
 
   if (!loggedIn) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#080706] px-5 text-white">
-        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0c0907] p-8">
+      <div className="flex min-h-screen items-center justify-center bg-[#080706] px-4 text-white">
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0c0907] p-6 sm:p-8">
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500 text-black">
               <ShieldCheck size={28} />
@@ -1126,7 +1149,9 @@ function Admin() {
           <div className="mt-6 rounded-xl border border-white/5 bg-white/[0.02] p-4 text-xs text-white/35">
             <div>owner@radhebox.demo</div>
             <div>radhe123</div>
+
             <br />
+
             <div>staff@radhebox.demo</div>
             <div>staff123</div>
           </div>
@@ -1136,30 +1161,30 @@ function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080706] text-white">
+    <div className="min-h-screen overflow-x-hidden bg-[#080706] text-white">
       <header className="border-b border-white/10 bg-[#0c0907]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5 lg:px-8">
           <div>
-            <div className="text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
+            <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
               RADHE BOX CRICKET
             </div>
 
-            <h1 className="mt-1 text-2xl font-black uppercase">
+            <h1 className="mt-1 text-xl font-black uppercase sm:text-2xl">
               Booking Dashboard
             </h1>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex shrink-0 gap-2">
             <button
               onClick={loadBookings}
-              className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold"
+              className="rounded-xl border border-white/10 px-3 py-2 text-xs font-bold sm:px-4 sm:py-3 sm:text-sm"
             >
               Refresh
             </button>
 
             <button
               onClick={logout}
-              className="rounded-xl bg-orange-500 px-4 py-3 text-sm font-black text-black"
+              className="rounded-xl bg-orange-500 px-3 py-2 text-xs font-black text-black sm:px-4 sm:py-3 sm:text-sm"
             >
               Logout
             </button>
@@ -1167,8 +1192,8 @@ function Admin() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-5 sm:py-8 lg:px-8">
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           <AdminStat title="Total" value={stats.total} />
           <AdminStat title="Pending" value={stats.pending} />
           <AdminStat title="Approved" value={stats.approved} />
@@ -1181,7 +1206,7 @@ function Admin() {
           </div>
         )}
 
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-6 flex flex-wrap gap-2">
           {["All", "Pending", "Approved", "Rejected"].map((item) => (
             <button
               key={item}
@@ -1308,12 +1333,12 @@ function Admin() {
 
 function AdminStat({ title, value }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#0c0907] p-6">
-      <div className="text-xs font-bold uppercase tracking-widest text-white/30">
+    <div className="rounded-2xl border border-white/10 bg-[#0c0907] p-5 sm:p-6">
+      <div className="text-[10px] font-bold uppercase tracking-widest text-white/30 sm:text-xs">
         {title}
       </div>
 
-      <div className="mt-2 text-4xl font-black text-orange-500">
+      <div className="mt-2 text-3xl font-black text-orange-500 sm:text-4xl">
         {value}
       </div>
     </div>
