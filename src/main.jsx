@@ -155,7 +155,7 @@ function SecretCricketMode({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 p-4">
-      <div className="relative w-full max-w-xl rounded-3xl border border-orange-500/30 bg-[#100c09] p-6 shadow-2xl">
+      <div className="relative w-full max-w-xl rounded-3xl border border-[#DFFF00]/30 bg-[#171021] p-6 shadow-2xl">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full border border-white/10 p-2 text-white/60 hover:bg-white/10"
@@ -164,12 +164,12 @@ function SecretCricketMode({ onClose }) {
         </button>
 
         <div className="mb-8 text-center">
-          <div className="text-xs font-bold uppercase tracking-[0.35em] text-orange-400">
+          <div className="text-xs font-bold uppercase tracking-[0.35em] text-[#DFFF00]">
             Secret Mode
           </div>
 
           <h2 className="mt-2 text-4xl font-black uppercase italic">
-            Cricket <span className="text-orange-500">Mode</span>
+            Cricket <span className="text-[#DFFF00]">Mode</span>
           </h2>
         </div>
 
@@ -179,7 +179,7 @@ function SecretCricketMode({ onClose }) {
               Score
             </div>
 
-            <div className="text-3xl font-black text-orange-500">
+            <div className="text-3xl font-black text-[#DFFF00]">
               {score}
             </div>
           </div>
@@ -193,8 +193,8 @@ function SecretCricketMode({ onClose }) {
           </div>
         </div>
 
-        <div className="relative mb-6 h-28 overflow-hidden rounded-2xl border border-white/10 bg-[#21150d]">
-          <div className="absolute left-1/2 top-0 h-full w-px bg-orange-500/30" />
+        <div className="relative mb-6 h-28 overflow-hidden rounded-2xl border border-white/10 bg-[#241A35]">
+          <div className="absolute left-1/2 top-0 h-full w-px bg-[#DFFF00]/30" />
 
           <div
             className="absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-red-500 shadow-lg"
@@ -208,7 +208,7 @@ function SecretCricketMode({ onClose }) {
 
         <button
           onClick={swing}
-          className="w-full rounded-2xl bg-orange-500 py-4 font-black tracking-widest text-black hover:bg-orange-400"
+          className="w-full rounded-2xl bg-[#DFFF00] py-4 font-black tracking-widest text-black hover:bg-[#DFFF00]"
         >
           {gameOver ? "PLAY AGAIN" : running ? "SWING" : "START GAME"}
         </button>
@@ -414,16 +414,16 @@ Price: ₹${selectedSlot?.price}
   ];
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#080706] text-white">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#0D0917] text-white">
       {/* NAVBAR */}
 
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#080706]/95 backdrop-blur-xl">
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#0D0917]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
           <button
             onClick={() => setLogoTaps((prev) => prev + 1)}
             className="flex min-w-0 items-center gap-2 sm:gap-3"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-black sm:h-10 sm:w-10">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#DFFF00] text-black sm:h-10 sm:w-10">
               <Trophy size={20} />
             </div>
 
@@ -432,7 +432,7 @@ Price: ₹${selectedSlot?.price}
                 RADHE
               </div>
 
-              <div className="text-[7px] font-bold tracking-[0.22em] text-orange-400 sm:text-[10px] sm:tracking-[0.3em]">
+              <div className="text-[7px] font-bold tracking-[0.22em] text-[#DFFF00] sm:text-[10px] sm:tracking-[0.3em]">
                 BOX CRICKET
               </div>
             </div>
@@ -454,7 +454,7 @@ Price: ₹${selectedSlot?.price}
 
             <a
               href="#booking"
-              className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400"
+              className="rounded-xl bg-[#DFFF00] px-5 py-3 text-sm font-black text-black transition hover:bg-[#DFFF00]"
             >
               BOOK NOW
             </a>
@@ -472,7 +472,7 @@ Price: ₹${selectedSlot?.price}
 
         {/* MOBILE MENU */}
         {menuOpen && (
-          <div className="border-t border-white/10 bg-[#0b0908] px-4 py-4 lg:hidden">
+          <div className="border-t border-white/10 bg-[#120D1D] px-4 py-4 lg:hidden">
             <div className="mx-auto flex max-w-7xl flex-col gap-1">
               {["home", "about", "facilities", "booking", "contact"].map(
                 (item) => (
@@ -490,7 +490,7 @@ Price: ₹${selectedSlot?.price}
               <a
                 href="#booking"
                 onClick={() => setMenuOpen(false)}
-                className="mt-2 rounded-xl bg-orange-500 px-4 py-3 text-center text-sm font-black text-black"
+                className="mt-2 rounded-xl bg-[#DFFF00] px-4 py-3 text-center text-sm font-black text-black"
               >
                 BOOK NOW
               </a>
@@ -505,11 +505,11 @@ Price: ₹${selectedSlot?.price}
         id="home"
         className="relative flex min-h-screen items-center overflow-hidden pt-24"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(249,115,22,0.15),transparent_35%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(223,255,0,0.15),transparent_35%)]" />
 
         <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-2 lg:gap-12 lg:px-8">
           <div>
-            <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-orange-400 sm:px-4 sm:text-xs sm:tracking-[0.2em]">
+            <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-[#DFFF00]/20 bg-[#DFFF00]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#DFFF00] sm:px-4 sm:text-xs sm:tracking-[0.2em]">
               <Sparkles size={13} />
               Radhe Farm • Ahmedabad
             </div>
@@ -517,7 +517,7 @@ Price: ₹${selectedSlot?.price}
             <h1 className="text-[3.5rem] font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
               PLAY HARD.
               <br />
-              PLAY <span className="text-orange-500">RADHE.</span>
+              PLAY <span className="text-[#DFFF00]">RADHE.</span>
             </h1>
 
             <p className="mt-6 max-w-xl text-base leading-7 text-white/55 sm:mt-7 sm:text-lg sm:leading-8">
@@ -528,7 +528,7 @@ Price: ₹${selectedSlot?.price}
             <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
               <a
                 href="#booking"
-                className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-orange-500 px-7 py-4 text-sm font-black text-black hover:bg-orange-400"
+                className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-[#DFFF00] px-7 py-4 text-sm font-black text-black hover:bg-[#DFFF00]"
               >
                 BOOK YOUR SLOT
                 <ArrowRight size={18} />
@@ -547,7 +547,7 @@ Price: ₹${selectedSlot?.price}
           </div>
 
           <div className="relative">
-            <div className="rounded-[24px] border border-white/10 bg-[#110d09] p-5 shadow-2xl sm:rounded-[32px] sm:p-8">
+            <div className="rounded-[24px] border border-white/10 bg-[#1A1427] p-5 shadow-2xl sm:rounded-[32px] sm:p-8">
               <div className="mb-8 flex items-center justify-between sm:mb-12">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/30 sm:text-xs sm:tracking-[0.3em]">
@@ -559,7 +559,7 @@ Price: ₹${selectedSlot?.price}
                   </div>
                 </div>
 
-                <Trophy className="text-orange-500" size={32} />
+                <Trophy className="text-[#DFFF00]" size={32} />
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -569,9 +569,9 @@ Price: ₹${selectedSlot?.price}
                 <Stat value="₹1100" label="Night" />
               </div>
 
-              <div className="mt-3 rounded-2xl border border-orange-500/10 bg-orange-500/5 p-4 sm:mt-4 sm:p-5">
+              <div className="mt-3 rounded-2xl border border-[#DFFF00]/10 bg-[#DFFF00]/5 p-4 sm:mt-4 sm:p-5">
                 <div className="flex items-center gap-3">
-                  <div className="h-3 w-3 animate-pulse rounded-full bg-orange-500" />
+                  <div className="h-3 w-3 animate-pulse rounded-full bg-[#DFFF00]" />
                   <span className="text-xs font-bold sm:text-sm">
                     BOOKINGS OPEN NOW
                   </span>
@@ -588,14 +588,14 @@ Price: ₹${selectedSlot?.price}
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
+              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
                 ABOUT THE VENUE
               </div>
 
               <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
                 MORE THAN
                 <br />
-                JUST A <span className="text-orange-500">GAME.</span>
+                JUST A <span className="text-[#DFFF00]">GAME.</span>
               </h2>
             </div>
 
@@ -621,12 +621,12 @@ Price: ₹${selectedSlot?.price}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="mb-10 sm:mb-12">
-            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
+            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
               THE EXPERIENCE
             </div>
 
             <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
-              BUILT FOR <span className="text-orange-500">PLAY.</span>
+              BUILT FOR <span className="text-[#DFFF00]">PLAY.</span>
             </h2>
           </div>
 
@@ -637,9 +637,9 @@ Price: ₹${selectedSlot?.price}
               return (
                 <div
                   key={item.title}
-                  className="group rounded-2xl border border-white/10 bg-[#0c0907] p-5 transition hover:border-orange-500/30 sm:rounded-3xl sm:p-7"
+                  className="group rounded-2xl border border-white/10 bg-[#130D20] p-5 transition hover:border-[#DFFF00]/30 sm:rounded-3xl sm:p-7"
                 >
-                  <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-black sm:mb-8 sm:h-12 sm:w-12 sm:rounded-2xl">
+                  <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DFFF00]/10 text-[#DFFF00] group-hover:bg-[#DFFF00] group-hover:text-black sm:mb-8 sm:h-12 sm:w-12 sm:rounded-2xl">
                     <Icon size={22} />
                   </div>
 
@@ -663,14 +663,14 @@ Price: ₹${selectedSlot?.price}
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
             <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
+              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
                 RESERVE YOUR TURF
               </div>
 
               <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
                 BOOK
                 <br />
-                YOUR <span className="text-orange-500">GAME.</span>
+                YOUR <span className="text-[#DFFF00]">GAME.</span>
               </h2>
 
               <p className="mt-5 max-w-md text-sm leading-7 text-white/45 sm:mt-6 sm:text-base">
@@ -694,7 +694,7 @@ Price: ₹${selectedSlot?.price}
 
               <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.02] p-4 sm:mt-5 sm:p-5">
                 <div className="flex items-center gap-3">
-                  <Clock3 className="shrink-0 text-orange-500" size={20} />
+                  <Clock3 className="shrink-0 text-[#DFFF00]" size={20} />
 
                   <div>
                     <div className="text-sm font-bold sm:text-base">
@@ -711,7 +711,7 @@ Price: ₹${selectedSlot?.price}
 
             <form
               onSubmit={submitBooking}
-              className="rounded-2xl border border-white/10 bg-[#0c0907] p-4 sm:rounded-3xl sm:p-8"
+              className="rounded-2xl border border-white/10 bg-[#130D20] p-4 sm:rounded-3xl sm:p-8"
             >
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
                 <Input
@@ -739,7 +739,7 @@ Price: ₹${selectedSlot?.price}
                     min={new Date().toISOString().split("T")[0]}
                     value={form.date}
                     onChange={(e) => updateForm("date", e.target.value)}
-                    className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none focus:border-orange-500 sm:px-4 sm:py-4"
+                    className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none focus:border-[#DFFF00] sm:px-4 sm:py-4"
                   />
                 </div>
 
@@ -760,7 +760,7 @@ Price: ₹${selectedSlot?.price}
                     <select
                       value={form.slot}
                       onChange={(e) => updateForm("slot", e.target.value)}
-                      className="box-border w-full min-w-0 appearance-none rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 pr-10 text-sm text-white outline-none focus:border-orange-500 sm:px-4 sm:py-4"
+                      className="box-border w-full min-w-0 appearance-none rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 pr-10 text-sm text-white outline-none focus:border-[#DFFF00] sm:px-4 sm:py-4"
                     >
                       <option value="" className="bg-[#11100e] text-white">
                         Select your slot
@@ -785,16 +785,16 @@ Price: ₹${selectedSlot?.price}
 
                     <ChevronDown
                       size={17}
-                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-orange-400 sm:right-4"
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#DFFF00] sm:right-4"
                     />
                   </div>
                 </div>
               </div>
 
               {selectedSlot && (
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4 sm:mt-5 sm:p-5">
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[#DFFF00]/20 bg-[#DFFF00]/5 p-4 sm:mt-5 sm:p-5">
                   <div className="min-w-0">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-[#DFFF00]">
                       Selected Slot
                     </div>
 
@@ -814,7 +814,7 @@ Price: ₹${selectedSlot?.price}
                       PRICE
                     </div>
 
-                    <div className="text-2xl font-black text-orange-500 sm:text-3xl">
+                    <div className="text-2xl font-black text-[#DFFF00] sm:text-3xl">
                       ₹{selectedSlot.price}
                     </div>
                   </div>
@@ -822,7 +822,7 @@ Price: ₹${selectedSlot?.price}
               )}
 
               {message && (
-                <div className="mt-4 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-sm text-orange-300 sm:mt-5">
+                <div className="mt-4 rounded-xl border border-[#DFFF00]/20 bg-[#DFFF00]/5 p-4 text-sm text-[#DFFF00] sm:mt-5">
                   {message}
                 </div>
               )}
@@ -830,7 +830,7 @@ Price: ₹${selectedSlot?.price}
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl bg-orange-500 px-6 py-4 text-sm font-black text-black hover:bg-orange-400 disabled:opacity-50 sm:mt-6"
+                className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl bg-[#DFFF00] px-6 py-4 text-sm font-black text-black hover:bg-[#DFFF00] disabled:opacity-50 sm:mt-6"
               >
                 {loading ? (
                   "SUBMITTING..."
@@ -854,12 +854,12 @@ Price: ₹${selectedSlot?.price}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="mb-10 sm:mb-12">
-            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
+            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
               FIND US
             </div>
 
             <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
-              COME PLAY <span className="text-orange-500">WITH US.</span>
+              COME PLAY <span className="text-[#DFFF00]">WITH US.</span>
             </h2>
           </div>
 
@@ -867,9 +867,9 @@ Price: ₹${selectedSlot?.price}
             <div className="grid gap-3 sm:grid-cols-2 sm:gap-5">
               <a
                 href={`tel:${PHONE}`}
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:rounded-3xl sm:p-7"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-[#DFFF00]/40 sm:rounded-3xl sm:p-7"
               >
-                <Phone className="mb-5 text-orange-500" size={24} />
+                <Phone className="mb-5 text-[#DFFF00]" size={24} />
 
                 <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   OWNER / CALL
@@ -879,7 +879,7 @@ Price: ₹${selectedSlot?.price}
                   {OWNER}
                 </div>
 
-                <div className="mt-1 text-sm text-orange-400">
+                <div className="mt-1 text-sm text-[#DFFF00]">
                   {PHONE}
                 </div>
               </a>
@@ -888,9 +888,9 @@ Price: ₹${selectedSlot?.price}
                 href={LOCATION_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:rounded-3xl sm:p-7"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-[#DFFF00]/40 sm:rounded-3xl sm:p-7"
               >
-                <MapPin className="mb-5 text-orange-500" size={24} />
+                <MapPin className="mb-5 text-[#DFFF00]" size={24} />
 
                 <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   LOCATION
@@ -900,7 +900,7 @@ Price: ₹${selectedSlot?.price}
                   Radhe Farm
                 </div>
 
-                <div className="mt-1 text-sm text-orange-400">
+                <div className="mt-1 text-sm text-[#DFFF00]">
                   Open in Google Maps →
                 </div>
               </a>
@@ -909,9 +909,9 @@ Price: ₹${selectedSlot?.price}
                 href="https://instagram.com/radhe_box_cricket"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:col-span-2 sm:rounded-3xl sm:p-7"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-[#DFFF00]/40 sm:col-span-2 sm:rounded-3xl sm:p-7"
               >
-                <Sparkles className="mb-5 text-orange-500" size={24} />
+                <Sparkles className="mb-5 text-[#DFFF00]" size={24} />
 
                 <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   INSTAGRAM
@@ -925,8 +925,8 @@ Price: ₹${selectedSlot?.price}
 
             {/* QR */}
 
-            <div className="rounded-2xl border border-orange-500/20 bg-[#100d0a] p-5 text-center sm:rounded-3xl sm:p-7">
-              <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs">
+            <div className="rounded-2xl border border-[#DFFF00]/20 bg-[#100d0a] p-5 text-center sm:rounded-3xl sm:p-7">
+              <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs">
                 SCAN FOR LOCATION
               </div>
 
@@ -944,7 +944,7 @@ Price: ₹${selectedSlot?.price}
                 href={LOCATION_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400"
+                className="mt-4 inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-[#DFFF00] px-5 py-3 text-sm font-black text-black hover:bg-[#DFFF00]"
               >
                 <MapPin size={16} />
                 GET DIRECTIONS
@@ -966,7 +966,7 @@ Price: ₹${selectedSlot?.price}
             Owner: {OWNER} • {PHONE}
           </div>
 
-          <a href="/admin" className="hover:text-orange-400">
+          <a href="/admin" className="hover:text-[#DFFF00]">
             Admin
           </a>
         </div>
@@ -1001,7 +1001,7 @@ function Input({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-orange-500 sm:px-4 sm:py-4"
+        className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-[#DFFF00] sm:px-4 sm:py-4"
       />
     </div>
   );
@@ -1013,8 +1013,8 @@ function Input({
 
 function PriceCard({ title, price, time }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4">
-      <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
+    <div className="min-w-0 rounded-2xl border border-[#DFFF00]/20 bg-[#DFFF00]/5 p-4">
+      <div className="text-[10px] font-bold uppercase tracking-widest text-[#DFFF00]">
         {title}
       </div>
 
@@ -1034,7 +1034,7 @@ function PriceCard({ title, price, time }) {
 function Stat({ value, label }) {
   return (
     <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-      <div className="text-2xl font-black text-orange-500 sm:text-3xl">
+      <div className="text-2xl font-black text-[#DFFF00] sm:text-3xl">
         {value}
       </div>
 
@@ -1225,14 +1225,14 @@ function Admin() {
 
   if (!loggedIn) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#080706] px-4 text-white">
-        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0c0907] p-6 sm:p-8">
+      <div className="flex min-h-screen items-center justify-center bg-[#0D0917] px-4 text-white">
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#130D20] p-6 sm:p-8">
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500 text-black">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#DFFF00] text-black">
               <ShieldCheck size={28} />
             </div>
 
-            <div className="text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
+            <div className="text-xs font-bold uppercase tracking-[0.3em] text-[#DFFF00]">
               RADHE BOX CRICKET
             </div>
 
@@ -1266,7 +1266,7 @@ function Admin() {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-orange-500 py-4 font-black text-black hover:bg-orange-400"
+              className="w-full rounded-xl bg-[#DFFF00] py-4 font-black text-black hover:bg-[#DFFF00]"
             >
               LOGIN
             </button>
@@ -1287,11 +1287,11 @@ function Admin() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#080706] text-white">
-      <header className="border-b border-white/10 bg-[#0c0907]">
+    <div className="min-h-screen overflow-x-hidden bg-[#0D0917] text-white">
+      <header className="border-b border-white/10 bg-[#130D20]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5 lg:px-8">
           <div>
-            <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
+            <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
               RADHE BOX CRICKET
             </div>
 
@@ -1310,7 +1310,7 @@ function Admin() {
 
             <button
               onClick={logout}
-              className="rounded-xl bg-orange-500 px-3 py-2 text-xs font-black text-black sm:px-4 sm:py-3 sm:text-sm"
+              className="rounded-xl bg-[#DFFF00] px-3 py-2 text-xs font-black text-black sm:px-4 sm:py-3 sm:text-sm"
             >
               Logout
             </button>
@@ -1331,9 +1331,9 @@ function Admin() {
           </div>
         )}
 
-        <section className="mt-8 rounded-3xl border border-orange-500/20 bg-[#0c0907] p-5 sm:p-6">
+        <section className="mt-8 rounded-3xl border border-[#DFFF00]/20 bg-[#130D20] p-5 sm:p-6">
           <div className="mb-5">
-            <div className="text-xs font-black uppercase tracking-[0.25em] text-orange-400">
+            <div className="text-xs font-black uppercase tracking-[0.25em] text-[#DFFF00]">
               MANUAL SLOT CONTROL
             </div>
             <h2 className="mt-2 text-2xl font-black uppercase">
@@ -1350,13 +1350,13 @@ function Admin() {
               min={new Date().toISOString().split("T")[0]}
               value={blockDate}
               onChange={(e) => setBlockDate(e.target.value)}
-              className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white outline-none focus:border-orange-500/50"
+              className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white outline-none focus:border-[#DFFF00]/50"
             />
 
             <select
               value={blockSlot}
               onChange={(e) => setBlockSlot(e.target.value)}
-              className="rounded-xl border border-white/10 bg-[#0c0907] px-4 py-3 text-white outline-none focus:border-orange-500/50"
+              className="rounded-xl border border-white/10 bg-[#130D20] px-4 py-3 text-white outline-none focus:border-[#DFFF00]/50"
             >
               <option value="">Select slot</option>
               {SLOT_OPTIONS.map((slot) => (
@@ -1369,7 +1369,7 @@ function Admin() {
             <button
               onClick={blockSlotManually}
               disabled={blockLoading}
-              className="rounded-xl bg-orange-500 px-5 py-3 font-black text-black transition hover:bg-orange-400 disabled:opacity-50"
+              className="rounded-xl bg-[#DFFF00] px-5 py-3 font-black text-black transition hover:bg-[#DFFF00] disabled:opacity-50"
             >
               {blockLoading ? "BLOCKING..." : "BLOCK SLOT 🔒"}
             </button>
@@ -1383,7 +1383,7 @@ function Admin() {
               onClick={() => setFilter(item)}
               className={`rounded-xl px-4 py-3 text-sm font-bold ${
                 filter === item
-                  ? "bg-orange-500 text-black"
+                  ? "bg-[#DFFF00] text-black"
                   : "border border-white/10 text-white/60"
               }`}
             >
@@ -1392,7 +1392,7 @@ function Admin() {
           ))}
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#0c0907]">
+        <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#130D20]">
           {loading ? (
             <div className="p-10 text-center text-white/40">
               Loading bookings...
@@ -1455,7 +1455,7 @@ function Admin() {
                         <span
                           className={`rounded-full px-3 py-1 text-xs font-bold ${
                             booking.status === "Blocked"
-                              ? "bg-orange-500/10 text-orange-400"
+                              ? "bg-[#DFFF00]/10 text-[#DFFF00]"
                               : booking.status === "Pending"
                               ? "bg-yellow-400/10 text-yellow-300"
                               : "bg-white/5 text-white/40"
@@ -1487,7 +1487,7 @@ function Admin() {
 
                                 await loadBookings();
                               }}
-                              className="rounded-lg bg-orange-500 px-3 py-2 text-xs font-black text-black"
+                              className="rounded-lg bg-[#DFFF00] px-3 py-2 text-xs font-black text-black"
                             >
                               BLOCK SLOT 🔒
                             </button>
@@ -1496,7 +1496,7 @@ function Admin() {
                           {booking.status === "Blocked" && (
                             <button
                               onClick={() => unblockSlot(booking.id)}
-                              className="rounded-lg border border-lime-400/20 px-3 py-2 text-xs font-bold text-lime-300"
+                              className="rounded-lg border border-[#DFFF00]/20 px-3 py-2 text-xs font-bold text-[#DFFF00]"
                             >
                               UNBLOCK
                             </button>
@@ -1529,198 +1529,14 @@ function Admin() {
 
 function AdminStat({ title, value }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#0c0907] p-5 sm:p-6">
+    <div className="rounded-2xl border border-white/10 bg-[#130D20] p-5 sm:p-6">
       <div className="text-[10px] font-bold uppercase tracking-widest text-white/30 sm:text-xs">
         {title}
       </div>
 
-      <div className="mt-2 text-3xl font-black text-orange-500 sm:text-4xl">
+      <div className="mt-2 text-3xl font-black text-[#DFFF00] sm:text-4xl">
         {value}
       </div>
-    </div>
-  );
-}
-
-
-/* =========================
-   LIVE MATCH CENTER
-========================= */
-
-const SCORE_DEFAULT = {
-  id: "current",
-  teamA: "RADHE XI",
-  teamB: "OPPONENT XI",
-  runs: 0,
-  wickets: 0,
-  balls: 0,
-  overs: 10,
-  striker: "Batter 1",
-  nonStriker: "Batter 2",
-  bowler: "Bowler 1",
-  lastEvent: "MATCH READY",
-  history: [],
-  status: "LIVE",
-};
-
-function LiveScoring() {
-  const [score, setScore] = useState(SCORE_DEFAULT);
-  const [loaded, setLoaded] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [setup, setSetup] = useState({
-    teamA: SCORE_DEFAULT.teamA,
-    teamB: SCORE_DEFAULT.teamB,
-    overs: SCORE_DEFAULT.overs,
-    striker: SCORE_DEFAULT.striker,
-    nonStriker: SCORE_DEFAULT.nonStriker,
-    bowler: SCORE_DEFAULT.bowler,
-  });
-
-  const loadScore = async () => {
-    const { data, error } = await supabase
-      .from("live_matches")
-      .select("data")
-      .eq("id", "current")
-      .maybeSingle();
-    if (!error && data?.data) {
-      setScore({ ...SCORE_DEFAULT, ...data.data });
-      setSetup({
-        teamA: data.data.teamA || SCORE_DEFAULT.teamA,
-        teamB: data.data.teamB || SCORE_DEFAULT.teamB,
-        overs: data.data.overs || SCORE_DEFAULT.overs,
-        striker: data.data.striker || SCORE_DEFAULT.striker,
-        nonStriker: data.data.nonStriker || SCORE_DEFAULT.nonStriker,
-        bowler: data.data.bowler || SCORE_DEFAULT.bowler,
-      });
-    }
-    setLoaded(true);
-  };
-
-  useEffect(() => {
-    loadScore();
-    const channel = supabase
-      .channel("radhe-live-score-public")
-      .on("postgres_changes", {
-        event: "*",
-        schema: "public",
-        table: "live_matches",
-        filter: "id=eq.current",
-      }, (payload) => {
-        if (payload.new?.data) {
-          setScore({ ...SCORE_DEFAULT, ...payload.new.data });
-        }
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, []);
-
-  const saveScore = async (next) => {
-    setSaving(true);
-    setScore(next);
-    const { error } = await supabase
-      .from("live_matches")
-      .upsert({ id: "current", data: next, updated_at: new Date().toISOString() }, { onConflict: "id" });
-    setSaving(false);
-    if (error) console.error(error);
-  };
-
-  const addEvent = (label, runs = 0, legal = true, wicket = false) => {
-    const currentBalls = Number(score.balls || 0);
-    const maxBalls = Number(score.overs || 10) * 6;
-    const nextBalls = Math.min(maxBalls, currentBalls + (legal ? 1 : 0));
-    const event = { label, runs, at: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) };
-    const next = {
-      ...score,
-      runs: Number(score.runs || 0) + runs,
-      wickets: Number(score.wickets || 0) + (wicket ? 1 : 0),
-      balls: nextBalls,
-      lastEvent: label,
-      history: [event, ...(score.history || [])].slice(0, 20),
-      status: nextBalls >= maxBalls || Number(score.wickets || 0) + (wicket ? 1 : 0) >= 10 ? "FINISHED" : "LIVE",
-    };
-    saveScore(next);
-  };
-
-  const undo = () => {
-    const history = score.history || [];
-    if (!history.length) return;
-    const last = history[0];
-    const legal = !["WIDE", "NO BALL"].includes(last.label);
-    const next = {
-      ...score,
-      runs: Math.max(0, Number(score.runs || 0) - Number(last.runs || 0)),
-      wickets: Math.max(0, Number(score.wickets || 0) - (last.label === "WICKET ❌" ? 1 : 0)),
-      balls: Math.max(0, Number(score.balls || 0) - (legal ? 1 : 0)),
-      history: history.slice(1),
-      lastEvent: history[1]?.label || "MATCH READY",
-      status: "LIVE",
-    };
-    saveScore(next);
-  };
-
-  const startMatch = () => saveScore({ ...SCORE_DEFAULT, ...setup, runs: 0, wickets: 0, balls: 0, history: [], lastEvent: "MATCH STARTED", status: "LIVE" });
-  const finishMatch = () => saveScore({ ...score, status: "FINISHED", lastEvent: "MATCH FINISHED" });
-
-  const overText = `${Math.floor(Number(score.balls || 0) / 6)}.${Number(score.balls || 0) % 6}`;
-
-  if (!loaded) return <div className="min-h-screen bg-[#080706] text-white flex items-center justify-center font-black">LOADING LIVE SCORE...</div>;
-
-  return (
-    <div className="min-h-screen bg-[#080706] text-white">
-      <nav className="border-b border-white/10 bg-[#080706]/95 px-4 py-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <a href="/" className="text-sm font-black tracking-[0.2em]">RADHE <span className="text-orange-500">LIVE</span></a>
-          <a href="/" className="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-white/60">← WEBSITE</a>
-        </div>
-      </nav>
-
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:py-12">
-        <div className="mb-8 text-center">
-          <div className="text-xs font-bold uppercase tracking-[0.3em] text-orange-400">RADHE MATCH CENTER</div>
-          <h1 className="mt-2 text-4xl font-black uppercase italic sm:text-6xl">LIVE <span className="text-orange-500">SCORE.</span></h1>
-          <p className="mt-3 text-sm text-white/40">Anyone can update the live score. Everyone sees the same match.</p>
-        </div>
-
-        <section className="rounded-3xl border border-orange-500/20 bg-[#100d0a] p-5 shadow-2xl sm:p-8">
-          <div className="grid gap-4 sm:grid-cols-3 sm:items-center">
-            <div><div className="text-xs font-bold text-white/30">TEAM A</div><div className="mt-1 text-2xl font-black uppercase">{score.teamA}</div></div>
-            <div className="text-center"><div className="text-xs font-bold uppercase tracking-widest text-orange-400">{score.status}</div><div className="mt-1 text-5xl font-black sm:text-6xl">{score.runs}/{score.wickets}</div><div className="text-sm text-white/40">{overText} / {score.overs} overs</div></div>
-            <div className="text-left sm:text-right"><div className="text-xs font-bold text-white/30">TEAM B</div><div className="mt-1 text-2xl font-black uppercase">{score.teamB}</div></div>
-          </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {[['STRIKER', score.striker], ['NON-STRIKER', score.nonStriker], ['BOWLER', score.bowler], ['LAST BALL', score.lastEvent]].map(([a,b]) => <div key={a} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"><div className="text-[10px] font-bold tracking-widest text-white/30">{a}</div><div className="mt-1 truncate text-sm font-black">{b}</div></div>)}
-          </div>
-        </section>
-
-        <section className="mt-5 rounded-3xl border border-white/10 bg-[#0c0907] p-5 sm:p-7">
-          <div className="mb-5 flex items-center justify-between"><h2 className="text-xl font-black uppercase">Score Controls</h2><span className="text-xs text-white/30">{saving ? 'SAVING...' : 'SYNCED'}</span></div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <button onClick={() => addEvent('+1',1)} className="rounded-2xl bg-white/10 py-5 font-black hover:bg-white/15">+1</button>
-            <button onClick={() => addEvent('+2',2)} className="rounded-2xl bg-white/10 py-5 font-black hover:bg-white/15">+2</button>
-            <button onClick={() => addEvent('+3',3)} className="rounded-2xl bg-white/10 py-5 font-black hover:bg-white/15">+3</button>
-            <button onClick={() => addEvent('FOUR 🔥',4)} className="rounded-2xl bg-orange-500 py-5 font-black text-black hover:bg-orange-400">FOUR 🔥</button>
-            <button onClick={() => addEvent('SIX 💥',6)} className="rounded-2xl bg-orange-500 py-5 font-black text-black hover:bg-orange-400">SIX 💥</button>
-            <button onClick={() => addEvent('WICKET ❌',0,true,true)} className="rounded-2xl border border-red-500/30 bg-red-500/10 py-5 font-black text-red-300">WICKET ❌</button>
-            <button onClick={() => addEvent('WIDE',1,false,false)} className="rounded-2xl border border-white/10 py-5 font-black">WIDE</button>
-            <button onClick={() => addEvent('NO BALL',1,false,false)} className="rounded-2xl border border-white/10 py-5 font-black">NO BALL</button>
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3"><button onClick={undo} className="rounded-xl border border-white/10 py-3 text-sm font-black">↩ UNDO</button><button onClick={startMatch} className="rounded-xl border border-orange-500/30 py-3 text-sm font-black text-orange-300">NEW / RESET MATCH</button><button onClick={finishMatch} className="rounded-xl bg-white/10 py-3 text-sm font-black">FINISH MATCH</button></div>
-        </section>
-
-        <section className="mt-5 rounded-3xl border border-white/10 bg-[#0c0907] p-5 sm:p-7">
-          <h2 className="text-xl font-black uppercase">Match Setup</h2>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {Object.entries({teamA:'Team A',teamB:'Team B',striker:'Striker',nonStriker:'Non-Striker',bowler:'Bowler'}).map(([key,label]) => <input key={key} value={setup[key]} onChange={e=>setSetup({...setup,[key]:e.target.value})} placeholder={label} className="rounded-xl border border-white/10 bg-[#11100e] px-4 py-3 text-sm outline-none focus:border-orange-500" />)}
-            <select value={setup.overs} onChange={e=>setSetup({...setup,overs:Number(e.target.value)})} className="rounded-xl border border-white/10 bg-[#11100e] px-4 py-3 text-sm outline-none"><option value={5}>5 Overs</option><option value={10}>10 Overs</option><option value={15}>15 Overs</option><option value={20}>20 Overs</option></select>
-          </div>
-          <button onClick={startMatch} className="mt-4 rounded-xl bg-orange-500 px-6 py-3 text-sm font-black text-black">START MATCH WITH THESE TEAMS</button>
-        </section>
-
-        <section className="mt-5 rounded-3xl border border-white/10 bg-[#0c0907] p-5 sm:p-7">
-          <h2 className="text-xl font-black uppercase">Ball-by-Ball</h2>
-          <div className="mt-4 space-y-2">{(score.history || []).length ? score.history.map((e,i)=><div key={i} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3"><span className="font-bold">{e.label}</span><span className="text-xs text-white/30">{e.at}</span></div>) : <div className="py-6 text-center text-sm text-white/30">No balls recorded yet.</div>}</div>
-        </section>
-      </main>
     </div>
   );
 }
@@ -1729,10 +1545,8 @@ function LiveScoring() {
    ROUTING
 ========================= */
 
-const path = window.location.pathname;
-const isAdmin = path === "/admin";
-const isScore = path === "/score";
+const isAdmin = window.location.pathname === "/admin";
 
 createRoot(document.getElementById("root")).render(
-  isAdmin ? <Admin /> : isScore ? <LiveScoring /> : <App />
+  isAdmin ? <Admin /> : <App />
 );
