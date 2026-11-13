@@ -15,6 +15,7 @@ function RadheCinematicBall() {
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", update);
+    <RadheCinematicBall />
     return () => {
       clearTimeout(t);
       window.removeEventListener("scroll", onScroll);
@@ -281,6 +282,99 @@ function SecretCricketMode({ onClose }) {
    MAIN APP
 ========================= */
 
+
+function RadheWorldExperience({ onOpenGame }) {
+  const [night, setNight] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
+  const [cursor, setCursor] = useState({ x: -100, y: -100, active: false });
+  const [shot, setShot] = useState(false);
+  const [score, setScore] = useState(0);
+  const audioRef = React.useRef(null);
+
+  useEffect(() => {
+    const move = (e) => setCursor({ x: e.clientX, y: e.clientY, active: true });
+    const leave = () => setCursor((c) => ({ ...c, active: false }));
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerleave", leave);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerleave", leave);
+    };
+  }, []);
+
+  const playTick = () => {
+    if (!soundOn) return;
+    try {
+      const C = window.AudioContext || window.webkitAudioContext;
+      if (!C) return;
+      const ctx = audioRef.current || new C();
+      audioRef.current = ctx;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.frequency.value = shot ? 110 : 180;
+      o.type = "triangle";
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.16);
+      o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.18);
+    } catch {}
+  };
+
+  const hit = () => {
+    setShot(true);
+    setScore((s) => s + 6);
+    playTick();
+    window.setTimeout(() => setShot(false), 700);
+  };
+
+  return (
+    <>
+      <div className={`radhe-world-layer ${night ? "radhe-night" : ""}`} aria-hidden="true">
+        <div className="radhe-floodlight radhe-flood-1" />
+        <div className="radhe-floodlight radhe-flood-2" />
+        <div className="radhe-floodlight radhe-flood-3" />
+        <div className="radhe-pitch-grid" />
+        <div className={`radhe-flying-ball ${shot ? "is-hit" : ""}`}>
+          <span className="radhe-ball-seam" />
+        </div>
+      </div>
+
+      {cursor.active && (
+        <div className="radhe-ball-cursor" style={{ transform: `translate3d(${cursor.x - 17}px, ${cursor.y - 17}px,0)` }}>
+          <span className="radhe-ball-seam" />
+        </div>
+      )}
+
+      <div className="radhe-control-dock">
+        <button onClick={() => setNight((v) => !v)} title="Stadium night mode">
+          {night ? "☀ DAY" : "◉ NIGHT"}
+        </button>
+        <button onClick={() => setSoundOn((v) => !v)} title="Sound effects">
+          {soundOn ? "🔊 SOUND" : "🔇 SOUND"}
+        </button>
+      </div>
+
+      <div className="radhe-shot-widget">
+        <div className="radhe-shot-label">YOUR SHOT</div>
+        <strong>{score}</strong>
+        <button onClick={hit}>BAT!</button>
+        <button className="radhe-play-mini" onClick={onOpenGame}>PLAY 6 BALLS ↗</button>
+      </div>
+
+      {shot && (
+        <div className="radhe-hit-flash" aria-hidden="true">
+          <span>PERFECT TIMING</span>
+          <strong>SIX! 🏏</strong>
+        </div>
+      )}
+
+      <div className="radhe-scroll-prompt" aria-hidden="true">
+        <span>SCROLL TO ENTER THE STADIUM</span><b>↓</b>
+      </div>
+    </>
+  );
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoTaps, setLogoTaps] = useState(0);
@@ -470,9 +564,8 @@ Price: ₹${selectedSlot?.price}
   ];
 
   return (
-    <>
-      <RadheCinematicBall />
-      <div className="min-h-screen w-full overflow-x-hidden bg-[#0D0917] text-white">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#0D0917] text-white">
+      <RadheWorldExperience onOpenGame={() => setShowGame(true)} />
       {/* NAVBAR */}
 
       <nav className="radhe-nav fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#0D0917]/95 backdrop-blur-xl">
@@ -1033,8 +1126,7 @@ Price: ₹${selectedSlot?.price}
       {showGame && (
         <SecretCricketMode onClose={() => setShowGame(false)} />
       )}
-      </div>
-    </>
+    </div>
   );
 }
 
