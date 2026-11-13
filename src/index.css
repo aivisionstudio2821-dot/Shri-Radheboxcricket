@@ -883,3 +883,138 @@ footer p, footer > a:last-child { color: #9da196; font-size: 9px; letter-spacing
 .secret-swing:active {
   transform: scale(0.96);
 }
+/* ================================
+   MOBILE RESPONSIVE FIX
+================================ */
+
+@media (max-width: 767px) {
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Navbar */
+  nav {
+    width: 100%;
+  }
+
+  nav > div {
+    max-width: 100% !important;
+  }
+
+  /* Hero */
+  section {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Better mobile headings */
+  h1 {
+    font-size: clamp(3rem, 15vw, 4.5rem) !important;
+    line-height: 0.9 !important;
+  }
+
+  h2 {
+    font-size: clamp(2.3rem, 11vw, 3.5rem) !important;
+    line-height: 0.95 !important;
+  }
+
+  /* Cards */
+  .rounded-3xl {
+    border-radius: 1.25rem;
+  }
+
+  /* Prevent inputs from overflowing */
+  input,
+  select,
+  button {
+    max-width: 100%;
+  }
+
+  /* Booking form */
+  form {
+    width: 100%;
+  }
+
+  /* Location QR */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Make buttons easier to tap */
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile spacing */
+  .py-24 {
+    padding-top: 4.5rem !important;
+    padding-bottom: 4.5rem !important;
+  }
+
+  .py-20 {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  /* Mobile horizontal padding */
+  .px-5 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* Extra-small phones */
+@media (max-width: 420px) {
+  h1 {
+    font-size: 3.15rem !important;
+  }
+
+  h2 {
+    font-size: 2.4rem !important;
+  }
+
+  .text-6xl {
+    font-size: 3.15rem !important;
+  }
+
+  .text-5xl {
+    font-size: 2.4rem !important;
+  }
+
+  .text-4xl {
+    font-size: 2.1rem !important;
+  }
+
+  .text-lg {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .p-8 {
+    padding: 1.25rem !important;
+  }
+
+  .p-7 {
+    padding: 1.25rem !important;
+  }
+
+  .gap-12 {
+    gap: 2rem !important;
+  }
+
+  .gap-8 {
+    gap: 1.5rem !important;
+  }
+}
