@@ -311,9 +311,23 @@ function App() {
 
       if (error) throw error;
 
-      setMessage(
-        `Booking request submitted! ₹${selectedSlot?.price} ${selectedSlot?.type?.toLowerCase()} slot selected.`
-      );
+  const whatsappMessage = `Hi Radhe Box Cricket 👋
+
+I want to book a slot.
+
+Name: ${form.name}
+Phone: ${form.phone}
+Date: ${formatDate(form.date)}
+Slot: ${form.slot}
+Players: ${form.players || "Not specified"}
+Price: ₹${selectedSlot?.price}
+
+Please confirm my booking. 🏏`;
+
+window.open(
+  `https://wa.me/918160885601?text=${encodeURIComponent(whatsappMessage)}`,
+  "_blank"
+);
 
       setForm({
         name: "",
