@@ -1,61 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-function RadheCinematicBall() {
-  const [intro, setIntro] = useState(true);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const t = setTimeout(() => setIntro(false), 2500);
-    let raf = 0;
-    const update = () => {
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      setProgress(Math.min(1, Math.max(0, window.scrollY / max)));
-      raf = 0;
-    };
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", update);
-    <RadheCinematicBall />
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", update);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  const x = Math.sin(progress * Math.PI * 2.2) * 70;
-  const y = Math.sin(progress * Math.PI * 6) * 38;
-  const rotate = progress * 1440;
-
-  return (
-    <>
-      {intro && (
-        <div className="radhe-cinematic-intro" aria-hidden="true">
-          <div className="radhe-intro-ball">
-            <span className="radhe-ball-seam" />
-          </div>
-          <div className="radhe-intro-flash" />
-          <div className="radhe-intro-copy">
-            <small>AHMEDABAD • BOX CRICKET</small>
-            <strong>YOUR GAME.<br /><em>YOUR NIGHT.</em></strong>
-          </div>
-        </div>
-      )}
-      <div
-        className="radhe-scroll-cricket-ball"
-        aria-hidden="true"
-        style={{
-          transform: `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg)`,
-          opacity: progress > 0.015 && progress < 0.985 ? 0.92 : 0
-        }}
-      >
-        <span className="radhe-ball-seam" />
-      </div>
-    </>
-  );
-}
-
 import { createRoot } from "react-dom/client";
 import {
   ArrowRight,
@@ -126,6 +69,99 @@ function formatDate(date) {
     month: "short",
     year: "numeric",
   });
+}
+
+
+/* =========================
+   RADHE CINEMATIC INTRO
+========================= */
+function RadheCinematicIntro({ onDone }) {
+  const [phase, setPhase] = useState("ready");
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase("launch"), 500);
+    const t2 = setTimeout(() => setPhase("impact"), 2050);
+    const t3 = setTimeout(() => setPhase("reveal"), 2850);
+    const t4 = setTimeout(() => onDone(), 4300);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
+  }, [onDone]);
+
+  return (
+    <div className={`radhe-intro ${phase}`} aria-hidden="true">
+      <div className="intro-noise" />
+      <div className="intro-vignette" />
+      <div className="intro-flood flood-left" />
+      <div className="intro-flood flood-right" />
+      <div className="intro-topline">RADHE FARM • AHMEDABAD</div>
+
+      <div className="intro-stadium">
+        <div className="intro-horizon" />
+        <div className="intro-pitch" />
+        <div className="intro-stumps">
+          <i /><i /><i />
+        </div>
+        <div className="intro-bat" />
+        <div className="intro-ball">
+          <span />
+        </div>
+        <div className="intro-impact" />
+      </div>
+
+      <div className="intro-copy">
+        <div className="intro-small">THE GAME IS ABOUT TO BEGIN</div>
+        <h1>YOUR GAME.<br /><span>YOUR NIGHT.</span></h1>
+        <div className="intro-line" />
+        <p>STEP INTO THE BOX</p>
+      </div>
+
+      <button className="intro-skip" onClick={onDone}>SKIP INTRO ↗</button>
+    </div>
+  );
+}
+
+/* =========================
+   PREMIUM BALL CURSOR
+========================= */
+function CricketCursor() {
+  const [pos, setPos] = useState({ x: -100, y: -100 });
+  const [visible, setVisible] = useState(false);
+  const [hit, setHit] = useState(false);
+
+  useEffect(() => {
+    const move = (e) => {
+      setPos({ x: e.clientX, y: e.clientY });
+      setVisible(true);
+    };
+    const leave = () => setVisible(false);
+    const click = () => {
+      setHit(true);
+      window.setTimeout(() => setHit(false), 260);
+    };
+
+    window.addEventListener("mousemove", move);
+    document.documentElement.addEventListener("mouseleave", leave);
+    window.addEventListener("click", click);
+    return () => {
+      window.removeEventListener("mousemove", move);
+      document.documentElement.removeEventListener("mouseleave", leave);
+      window.removeEventListener("click", click);
+    };
+  }, []);
+
+  return (
+    <div
+      className={`cricket-cursor ${visible ? "is-visible" : ""} ${hit ? "is-hit" : ""}`}
+      style={{ left: pos.x, top: pos.y }}
+    >
+      <span className="cursor-ball-seam" />
+      <span className="cursor-crosshair" />
+    </div>
+  );
 }
 
 /* =========================
@@ -212,7 +248,7 @@ function SecretCricketMode({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 p-4">
-      <div className="relative w-full max-w-xl rounded-3xl border border-[#DFFF00]/30 bg-[#171021] p-6 shadow-2xl">
+      <div className="relative w-full max-w-xl rounded-3xl border border-orange-500/30 bg-[#100c09] p-6 shadow-2xl">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full border border-white/10 p-2 text-white/60 hover:bg-white/10"
@@ -221,12 +257,12 @@ function SecretCricketMode({ onClose }) {
         </button>
 
         <div className="mb-8 text-center">
-          <div className="text-xs font-bold uppercase tracking-[0.35em] text-[#DFFF00]">
+          <div className="text-xs font-bold uppercase tracking-[0.35em] text-orange-400">
             Secret Mode
           </div>
 
           <h2 className="mt-2 text-4xl font-black uppercase italic">
-            Cricket <span className="text-[#DFFF00]">Mode</span>
+            Cricket <span className="text-orange-500">Mode</span>
           </h2>
         </div>
 
@@ -236,7 +272,7 @@ function SecretCricketMode({ onClose }) {
               Score
             </div>
 
-            <div className="text-3xl font-black text-[#DFFF00]">
+            <div className="text-3xl font-black text-orange-500">
               {score}
             </div>
           </div>
@@ -250,8 +286,8 @@ function SecretCricketMode({ onClose }) {
           </div>
         </div>
 
-        <div className="relative mb-6 h-28 overflow-hidden rounded-2xl border border-white/10 bg-[#241A35]">
-          <div className="absolute left-1/2 top-0 h-full w-px bg-[#DFFF00]/30" />
+        <div className="relative mb-6 h-28 overflow-hidden rounded-2xl border border-white/10 bg-[#21150d]">
+          <div className="absolute left-1/2 top-0 h-full w-px bg-orange-500/30" />
 
           <div
             className="absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-red-500 shadow-lg"
@@ -265,7 +301,7 @@ function SecretCricketMode({ onClose }) {
 
         <button
           onClick={swing}
-          className="w-full rounded-2xl bg-[#DFFF00] py-4 font-black tracking-widest text-black hover:bg-[#DFFF00]"
+          className="w-full rounded-2xl bg-orange-500 py-4 font-black tracking-widest text-black hover:bg-orange-400"
         >
           {gameOver ? "PLAY AGAIN" : running ? "SWING" : "START GAME"}
         </button>
@@ -282,100 +318,8 @@ function SecretCricketMode({ onClose }) {
    MAIN APP
 ========================= */
 
-
-function RadheWorldExperience({ onOpenGame }) {
-  const [night, setNight] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
-  const [cursor, setCursor] = useState({ x: -100, y: -100, active: false });
-  const [shot, setShot] = useState(false);
-  const [score, setScore] = useState(0);
-  const audioRef = React.useRef(null);
-
-  useEffect(() => {
-    const move = (e) => setCursor({ x: e.clientX, y: e.clientY, active: true });
-    const leave = () => setCursor((c) => ({ ...c, active: false }));
-    window.addEventListener("pointermove", move, { passive: true });
-    window.addEventListener("pointerleave", leave);
-    return () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerleave", leave);
-    };
-  }, []);
-
-  const playTick = () => {
-    if (!soundOn) return;
-    try {
-      const C = window.AudioContext || window.webkitAudioContext;
-      if (!C) return;
-      const ctx = audioRef.current || new C();
-      audioRef.current = ctx;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.frequency.value = shot ? 110 : 180;
-      o.type = "triangle";
-      g.gain.setValueAtTime(0.0001, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.16);
-      o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.18);
-    } catch {}
-  };
-
-  const hit = () => {
-    setShot(true);
-    setScore((s) => s + 6);
-    playTick();
-    window.setTimeout(() => setShot(false), 700);
-  };
-
-  return (
-    <>
-      <div className={`radhe-world-layer ${night ? "radhe-night" : ""}`} aria-hidden="true">
-        <div className="radhe-floodlight radhe-flood-1" />
-        <div className="radhe-floodlight radhe-flood-2" />
-        <div className="radhe-floodlight radhe-flood-3" />
-        <div className="radhe-pitch-grid" />
-        <div className={`radhe-flying-ball ${shot ? "is-hit" : ""}`}>
-          <span className="radhe-ball-seam" />
-        </div>
-      </div>
-
-      {cursor.active && (
-        <div className="radhe-ball-cursor" style={{ transform: `translate3d(${cursor.x - 17}px, ${cursor.y - 17}px,0)` }}>
-          <span className="radhe-ball-seam" />
-        </div>
-      )}
-
-      <div className="radhe-control-dock">
-        <button onClick={() => setNight((v) => !v)} title="Stadium night mode">
-          {night ? "☀ DAY" : "◉ NIGHT"}
-        </button>
-        <button onClick={() => setSoundOn((v) => !v)} title="Sound effects">
-          {soundOn ? "🔊 SOUND" : "🔇 SOUND"}
-        </button>
-      </div>
-
-      <div className="radhe-shot-widget">
-        <div className="radhe-shot-label">YOUR SHOT</div>
-        <strong>{score}</strong>
-        <button onClick={hit}>BAT!</button>
-        <button className="radhe-play-mini" onClick={onOpenGame}>PLAY 6 BALLS ↗</button>
-      </div>
-
-      {shot && (
-        <div className="radhe-hit-flash" aria-hidden="true">
-          <span>PERFECT TIMING</span>
-          <strong>SIX! 🏏</strong>
-        </div>
-      )}
-
-      <div className="radhe-scroll-prompt" aria-hidden="true">
-        <span>SCROLL TO ENTER THE STADIUM</span><b>↓</b>
-      </div>
-    </>
-  );
-}
-
 function App() {
+  const [introDone, setIntroDone] = useState(() => sessionStorage.getItem("radheIntroSeen") === "true");
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoTaps, setLogoTaps] = useState(0);
   const [showGame, setShowGame] = useState(false);
@@ -390,7 +334,6 @@ function App() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [bookedSlots, setBookedSlots] = useState([]);
 
   const selectedSlot = useMemo(
     () => SLOT_OPTIONS.find((slot) => slot.value === form.slot),
@@ -404,59 +347,13 @@ function App() {
     }
   }, [logoTaps]);
 
-  useEffect(() => {
-    if (!form.date) {
-      setBookedSlots([]);
-      return;
-    }
-
-    loadBookedSlots(form.date);
-
-    const interval = setInterval(() => {
-      loadBookedSlots(form.date);
-    }, 15000);
-
-    return () => clearInterval(interval);
-  }, [form.date]);
-
-  const loadBookedSlots = async (date) => {
-    if (!date || !supabase) {
-      setBookedSlots([]);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("slot")
-      .eq("date", date)
-      .in("status", ["Approved", "Blocked"]);
-
-    if (error) {
-      console.error(error);
-      setBookedSlots([]);
-      return;
-    }
-
-    setBookedSlots((data || []).map((booking) => booking.slot));
-  };
-
   const updateForm = (key, value) => {
-    setMessage("");
-
-    if (key === "date") {
-      setForm((prev) => ({
-        ...prev,
-        date: value,
-        slot: "",
-      }));
-      loadBookedSlots(value);
-      return;
-    }
-
     setForm((prev) => ({
       ...prev,
       [key]: value,
     }));
+
+    setMessage("");
   };
 
   const submitBooking = async (e) => {
@@ -508,21 +405,8 @@ function App() {
 
       if (error) throw error;
 
-      const whatsappMessage = `Hi Radhe Box Cricket 👋\n\nI want to book a slot.\n\nName: ${form.name}
-Phone: ${form.phone}
-Date: ${formatDate(form.date)}
-Slot: ${form.slot}
-Players: ${form.players || "Not specified"}
-Price: ₹${selectedSlot?.price}
-\nPlease confirm my booking. 🏏`;
-
-      window.open(
-        `https://wa.me/918160885601?text=${encodeURIComponent(whatsappMessage)}`,
-        "_blank"
-      );
-
       setMessage(
-        `Booking request submitted! ₹${selectedSlot?.price} ${selectedSlot?.type?.toLowerCase()} slot selected. WhatsApp opened for confirmation.`
+        `Booking request submitted! ₹${selectedSlot?.price} ${selectedSlot?.type?.toLowerCase()} slot selected.`
       );
 
       setForm({
@@ -563,18 +447,25 @@ Price: ₹${selectedSlot?.price}
     },
   ];
 
+  const finishIntro = () => {
+    sessionStorage.setItem("radheIntroSeen", "true");
+    setIntroDone(true);
+  };
+
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#0D0917] text-white">
-      <RadheWorldExperience onOpenGame={() => setShowGame(true)} />
+    <>
+      {!introDone && <RadheCinematicIntro onDone={finishIntro} />}
+      <CricketCursor />
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#080706] text-white">
       {/* NAVBAR */}
 
-      <nav className="radhe-nav fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#0D0917]/95 backdrop-blur-xl">
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#080706]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
           <button
             onClick={() => setLogoTaps((prev) => prev + 1)}
             className="flex min-w-0 items-center gap-2 sm:gap-3"
           >
-            <div className="radhe-logo-mark flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#DFFF00] text-black sm:h-10 sm:w-10">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-black sm:h-10 sm:w-10">
               <Trophy size={20} />
             </div>
 
@@ -583,7 +474,7 @@ Price: ₹${selectedSlot?.price}
                 RADHE
               </div>
 
-              <div className="text-[7px] font-bold tracking-[0.22em] text-[#DFFF00] sm:text-[10px] sm:tracking-[0.3em]">
+              <div className="text-[7px] font-bold tracking-[0.22em] text-orange-400 sm:text-[10px] sm:tracking-[0.3em]">
                 BOX CRICKET
               </div>
             </div>
@@ -605,7 +496,7 @@ Price: ₹${selectedSlot?.price}
 
             <a
               href="#booking"
-              className="radhe-nav-cta rounded-xl bg-[#DFFF00] px-5 py-3 text-sm font-black text-black transition hover:bg-[#DFFF00]"
+              className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black transition hover:bg-orange-400"
             >
               BOOK NOW
             </a>
@@ -623,7 +514,7 @@ Price: ₹${selectedSlot?.price}
 
         {/* MOBILE MENU */}
         {menuOpen && (
-          <div className="border-t border-white/10 bg-[#120D1D] px-4 py-4 lg:hidden">
+          <div className="border-t border-white/10 bg-[#0b0908] px-4 py-4 lg:hidden">
             <div className="mx-auto flex max-w-7xl flex-col gap-1">
               {["home", "about", "facilities", "booking", "contact"].map(
                 (item) => (
@@ -641,7 +532,7 @@ Price: ₹${selectedSlot?.price}
               <a
                 href="#booking"
                 onClick={() => setMenuOpen(false)}
-                className="mt-2 rounded-xl bg-[#DFFF00] px-4 py-3 text-center text-sm font-black text-black"
+                className="mt-2 rounded-xl bg-orange-500 px-4 py-3 text-center text-sm font-black text-black"
               >
                 BOOK NOW
               </a>
@@ -654,21 +545,21 @@ Price: ₹${selectedSlot?.price}
 
       <section
         id="home"
-        className="radhe-hero relative flex min-h-screen items-center overflow-hidden pt-24"
+        className="relative flex min-h-screen items-center overflow-hidden pt-24"
       >
-        <div className="radhe-hero-glow absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(223,255,0,0.15),transparent_35%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_40%,rgba(249,115,22,0.15),transparent_35%)]" />
 
-        <div className="radhe-hero-grid relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-2 lg:gap-12 lg:px-8">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-2 lg:gap-12 lg:px-8">
           <div>
-            <div className="radhe-eyebrow mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-[#DFFF00]/20 bg-[#DFFF00]/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#DFFF00] sm:px-4 sm:text-xs sm:tracking-[0.2em]">
+            <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-orange-400 sm:px-4 sm:text-xs sm:tracking-[0.2em]">
               <Sparkles size={13} />
               Radhe Farm • Ahmedabad
             </div>
 
-            <h1 className="radhe-title text-[3.5rem] font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
+            <h1 className="text-[3.5rem] font-black uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl">
               PLAY HARD.
               <br />
-              PLAY <span className="text-[#DFFF00]">RADHE.</span>
+              PLAY <span className="text-orange-500">RADHE.</span>
             </h1>
 
             <p className="mt-6 max-w-xl text-base leading-7 text-white/55 sm:mt-7 sm:text-lg sm:leading-8">
@@ -679,7 +570,7 @@ Price: ₹${selectedSlot?.price}
             <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
               <a
                 href="#booking"
-                className="radhe-cta inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-[#DFFF00] px-7 py-4 text-sm font-black text-black hover:bg-[#DFFF00]"
+                className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-orange-500 px-7 py-4 text-sm font-black text-black hover:bg-orange-400"
               >
                 BOOK YOUR SLOT
                 <ArrowRight size={18} />
@@ -697,8 +588,8 @@ Price: ₹${selectedSlot?.price}
             </div>
           </div>
 
-          <div className="radhe-hero-card-wrap relative">
-            <div className="radhe-hero-card rounded-[24px] border border-white/10 bg-[#1A1427] p-5 shadow-2xl sm:rounded-[32px] sm:p-8"><div className="radhe-scanline" aria-hidden="true" />
+          <div className="relative">
+            <div className="rounded-[24px] border border-white/10 bg-[#110d09] p-5 shadow-2xl sm:rounded-[32px] sm:p-8">
               <div className="mb-8 flex items-center justify-between sm:mb-12">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/30 sm:text-xs sm:tracking-[0.3em]">
@@ -710,7 +601,7 @@ Price: ₹${selectedSlot?.price}
                   </div>
                 </div>
 
-                <Trophy className="text-[#DFFF00]" size={32} />
+                <Trophy className="text-orange-500" size={32} />
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -720,9 +611,9 @@ Price: ₹${selectedSlot?.price}
                 <Stat value="₹1100" label="Night" />
               </div>
 
-              <div className="radhe-live-card mt-3 rounded-2xl border border-[#DFFF00]/10 bg-[#DFFF00]/5 p-4 sm:mt-4 sm:p-5">
+              <div className="mt-3 rounded-2xl border border-orange-500/10 bg-orange-500/5 p-4 sm:mt-4 sm:p-5">
                 <div className="flex items-center gap-3">
-                  <div className="h-3 w-3 animate-pulse rounded-full bg-[#DFFF00]" />
+                  <div className="h-3 w-3 animate-pulse rounded-full bg-orange-500" />
                   <span className="text-xs font-bold sm:text-sm">
                     BOOKINGS OPEN NOW
                   </span>
@@ -735,18 +626,18 @@ Price: ₹${selectedSlot?.price}
 
       {/* ABOUT */}
 
-      <section id="about" className="border-t border-white/5 py-20 sm:py-24">
+      <section id="about" className="radhe-reveal "border-t border-white/5 py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
+              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
                 ABOUT THE VENUE
               </div>
 
               <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
                 MORE THAN
                 <br />
-                JUST A <span className="text-[#DFFF00]">GAME.</span>
+                JUST A <span className="text-orange-500">GAME.</span>
               </h2>
             </div>
 
@@ -768,29 +659,29 @@ Price: ₹${selectedSlot?.price}
 
       <section
         id="facilities"
-        className="border-t border-white/5 bg-white/[0.015] py-20 sm:py-24"
+        className="radhe-reveal "border-t border-white/5 bg-white/[0.015] py-20 sm:py-24"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="mb-10 sm:mb-12">
-            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
+            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
               THE EXPERIENCE
             </div>
 
             <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
-              BUILT FOR <span className="text-[#DFFF00]">PLAY.</span>
+              BUILT FOR <span className="text-orange-500">PLAY.</span>
             </h2>
           </div>
 
-          <div className="radhe-facility-grid grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             {facilities.map((item) => {
               const Icon = item.icon;
 
               return (
                 <div
                   key={item.title}
-                  className="group rounded-2xl border border-white/10 bg-[#130D20] p-5 transition hover:border-[#DFFF00]/30 sm:rounded-3xl sm:p-7"
+                  className="group rounded-2xl border border-white/10 bg-[#0c0907] p-5 transition hover:border-orange-500/30 sm:rounded-3xl sm:p-7"
                 >
-                  <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DFFF00]/10 text-[#DFFF00] group-hover:bg-[#DFFF00] group-hover:text-black sm:mb-8 sm:h-12 sm:w-12 sm:rounded-2xl">
+                  <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-black sm:mb-8 sm:h-12 sm:w-12 sm:rounded-2xl">
                     <Icon size={22} />
                   </div>
 
@@ -810,18 +701,18 @@ Price: ₹${selectedSlot?.price}
 
       {/* BOOKING */}
 
-      <section id="booking" className="border-t border-white/5 py-20 sm:py-24">
+      <section id="booking" className="radhe-reveal "border-t border-white/5 py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
             <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
+              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
                 RESERVE YOUR TURF
               </div>
 
               <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
                 BOOK
                 <br />
-                YOUR <span className="text-[#DFFF00]">GAME.</span>
+                YOUR <span className="text-orange-500">GAME.</span>
               </h2>
 
               <p className="mt-5 max-w-md text-sm leading-7 text-white/45 sm:mt-6 sm:text-base">
@@ -845,7 +736,7 @@ Price: ₹${selectedSlot?.price}
 
               <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.02] p-4 sm:mt-5 sm:p-5">
                 <div className="flex items-center gap-3">
-                  <Clock3 className="shrink-0 text-[#DFFF00]" size={20} />
+                  <Clock3 className="shrink-0 text-orange-500" size={20} />
 
                   <div>
                     <div className="text-sm font-bold sm:text-base">
@@ -862,7 +753,7 @@ Price: ₹${selectedSlot?.price}
 
             <form
               onSubmit={submitBooking}
-              className="rounded-2xl border border-white/10 bg-[#130D20] p-4 sm:rounded-3xl sm:p-8"
+              className="rounded-2xl border border-white/10 bg-[#0c0907] p-4 sm:rounded-3xl sm:p-8"
             >
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
                 <Input
@@ -890,7 +781,7 @@ Price: ₹${selectedSlot?.price}
                     min={new Date().toISOString().split("T")[0]}
                     value={form.date}
                     onChange={(e) => updateForm("date", e.target.value)}
-                    className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none focus:border-[#DFFF00] sm:px-4 sm:py-4"
+                    className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none focus:border-orange-500 sm:px-4 sm:py-4"
                   />
                 </div>
 
@@ -907,45 +798,39 @@ Price: ₹${selectedSlot?.price}
                     Select Slot *
                   </label>
 
-                  <div className="radhe-hero-card-wrap relative">
+                  <div className="relative">
                     <select
                       value={form.slot}
                       onChange={(e) => updateForm("slot", e.target.value)}
-                      className="box-border w-full min-w-0 appearance-none rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 pr-10 text-sm text-white outline-none focus:border-[#DFFF00] sm:px-4 sm:py-4"
+                      className="box-border w-full min-w-0 appearance-none rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 pr-10 text-sm text-white outline-none focus:border-orange-500 sm:px-4 sm:py-4"
                     >
                       <option value="" className="bg-[#11100e] text-white">
                         Select your slot
                       </option>
 
-                      {SLOT_OPTIONS.map((slot) => {
-                        const isBooked = bookedSlots.includes(slot.value);
-
-                        return (
-                          <option
-                            key={slot.value}
-                            value={slot.value}
-                            disabled={isBooked}
-                            className="bg-[#11100e] text-white"
-                          >
-                            {slot.value} — ₹{slot.price}
-                            {isBooked ? " • BOOKED" : ""}
-                          </option>
-                        );
-                      })}
+                      {SLOT_OPTIONS.map((slot) => (
+                        <option
+                          key={slot.value}
+                          value={slot.value}
+                          className="bg-[#11100e] text-white"
+                        >
+                          {slot.value} — ₹{slot.price}
+                        </option>
+                      ))}
                     </select>
 
                     <ChevronDown
                       size={17}
-                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#DFFF00] sm:right-4"
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-orange-400 sm:right-4"
                     />
                   </div>
                 </div>
               </div>
 
               {selectedSlot && (
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[#DFFF00]/20 bg-[#DFFF00]/5 p-4 sm:mt-5 sm:p-5">
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4 sm:mt-5 sm:p-5">
                   <div className="min-w-0">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-[#DFFF00]">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
                       Selected Slot
                     </div>
 
@@ -965,7 +850,7 @@ Price: ₹${selectedSlot?.price}
                       PRICE
                     </div>
 
-                    <div className="text-2xl font-black text-[#DFFF00] sm:text-3xl">
+                    <div className="text-2xl font-black text-orange-500 sm:text-3xl">
                       ₹{selectedSlot.price}
                     </div>
                   </div>
@@ -973,7 +858,7 @@ Price: ₹${selectedSlot?.price}
               )}
 
               {message && (
-                <div className="mt-4 rounded-xl border border-[#DFFF00]/20 bg-[#DFFF00]/5 p-4 text-sm text-[#DFFF00] sm:mt-5">
+                <div className="mt-4 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 text-sm text-orange-300 sm:mt-5">
                   {message}
                 </div>
               )}
@@ -981,7 +866,7 @@ Price: ₹${selectedSlot?.price}
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl bg-[#DFFF00] px-6 py-4 text-sm font-black text-black hover:bg-[#DFFF00] disabled:opacity-50 sm:mt-6"
+                className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl bg-orange-500 px-6 py-4 text-sm font-black text-black hover:bg-orange-400 disabled:opacity-50 sm:mt-6"
               >
                 {loading ? (
                   "SUBMITTING..."
@@ -1001,16 +886,16 @@ Price: ₹${selectedSlot?.price}
 
       <section
         id="contact"
-        className="border-t border-white/5 bg-[#0b0907] py-20 sm:py-24"
+        className="radhe-reveal "border-t border-white/5 bg-[#0b0907] py-20 sm:py-24"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
           <div className="mb-10 sm:mb-12">
-            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
+            <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
               FIND US
             </div>
 
             <h2 className="text-[2.5rem] font-black uppercase leading-[0.95] sm:text-5xl">
-              COME PLAY <span className="text-[#DFFF00]">WITH US.</span>
+              COME PLAY <span className="text-orange-500">WITH US.</span>
             </h2>
           </div>
 
@@ -1018,9 +903,9 @@ Price: ₹${selectedSlot?.price}
             <div className="grid gap-3 sm:grid-cols-2 sm:gap-5">
               <a
                 href={`tel:${PHONE}`}
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-[#DFFF00]/40 sm:rounded-3xl sm:p-7"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:rounded-3xl sm:p-7"
               >
-                <Phone className="mb-5 text-[#DFFF00]" size={24} />
+                <Phone className="mb-5 text-orange-500" size={24} />
 
                 <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   OWNER / CALL
@@ -1030,7 +915,7 @@ Price: ₹${selectedSlot?.price}
                   {OWNER}
                 </div>
 
-                <div className="mt-1 text-sm text-[#DFFF00]">
+                <div className="mt-1 text-sm text-orange-400">
                   {PHONE}
                 </div>
               </a>
@@ -1039,9 +924,9 @@ Price: ₹${selectedSlot?.price}
                 href={LOCATION_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-[#DFFF00]/40 sm:rounded-3xl sm:p-7"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:rounded-3xl sm:p-7"
               >
-                <MapPin className="mb-5 text-[#DFFF00]" size={24} />
+                <MapPin className="mb-5 text-orange-500" size={24} />
 
                 <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   LOCATION
@@ -1051,7 +936,7 @@ Price: ₹${selectedSlot?.price}
                   Radhe Farm
                 </div>
 
-                <div className="mt-1 text-sm text-[#DFFF00]">
+                <div className="mt-1 text-sm text-orange-400">
                   Open in Google Maps →
                 </div>
               </a>
@@ -1060,9 +945,9 @@ Price: ₹${selectedSlot?.price}
                 href="https://instagram.com/radhe_box_cricket"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-[#DFFF00]/40 sm:col-span-2 sm:rounded-3xl sm:p-7"
+                className="rounded-2xl border border-white/10 bg-[#100d0a] p-5 transition hover:border-orange-500/40 sm:col-span-2 sm:rounded-3xl sm:p-7"
               >
-                <Sparkles className="mb-5 text-[#DFFF00]" size={24} />
+                <Sparkles className="mb-5 text-orange-500" size={24} />
 
                 <div className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                   INSTAGRAM
@@ -1076,8 +961,8 @@ Price: ₹${selectedSlot?.price}
 
             {/* QR */}
 
-            <div className="rounded-2xl border border-[#DFFF00]/20 bg-[#100d0a] p-5 text-center sm:rounded-3xl sm:p-7">
-              <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs">
+            <div className="rounded-2xl border border-orange-500/20 bg-[#100d0a] p-5 text-center sm:rounded-3xl sm:p-7">
+              <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs">
                 SCAN FOR LOCATION
               </div>
 
@@ -1095,7 +980,7 @@ Price: ₹${selectedSlot?.price}
                 href={LOCATION_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-[#DFFF00] px-5 py-3 text-sm font-black text-black hover:bg-[#DFFF00]"
+                className="mt-4 inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-black text-black hover:bg-orange-400"
               >
                 <MapPin size={16} />
                 GET DIRECTIONS
@@ -1117,7 +1002,7 @@ Price: ₹${selectedSlot?.price}
             Owner: {OWNER} • {PHONE}
           </div>
 
-          <a href="/admin" className="hover:text-[#DFFF00]">
+          <a href="/admin" className="hover:text-orange-400">
             Admin
           </a>
         </div>
@@ -1127,6 +1012,7 @@ Price: ₹${selectedSlot?.price}
         <SecretCricketMode onClose={() => setShowGame(false)} />
       )}
     </div>
+    </>
   );
 }
 
@@ -1152,7 +1038,7 @@ function Input({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-[#DFFF00] sm:px-4 sm:py-4"
+        className="box-border w-full min-w-0 rounded-xl border border-white/10 bg-[#11100e] px-3 py-3.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-orange-500 sm:px-4 sm:py-4"
       />
     </div>
   );
@@ -1164,8 +1050,8 @@ function Input({
 
 function PriceCard({ title, price, time }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-[#DFFF00]/20 bg-[#DFFF00]/5 p-4">
-      <div className="text-[10px] font-bold uppercase tracking-widest text-[#DFFF00]">
+    <div className="min-w-0 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4">
+      <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
         {title}
       </div>
 
@@ -1185,7 +1071,7 @@ function PriceCard({ title, price, time }) {
 function Stat({ value, label }) {
   return (
     <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-      <div className="text-2xl font-black text-[#DFFF00] sm:text-3xl">
+      <div className="text-2xl font-black text-orange-500 sm:text-3xl">
         {value}
       </div>
 
@@ -1213,9 +1099,6 @@ function Admin() {
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [blockDate, setBlockDate] = useState("");
-  const [blockSlot, setBlockSlot] = useState("");
-  const [blockLoading, setBlockLoading] = useState(false);
 
   const loadBookings = async () => {
     if (!supabase) {
@@ -1272,75 +1155,20 @@ function Admin() {
     setLoggedIn(false);
   };
 
-  const blockSlotManually = async () => {
+  const updateStatus = async (id, status) => {
     if (!supabase) return;
-
-    if (!blockDate || !blockSlot) {
-      setError("Select a date and slot to block.");
-      return;
-    }
-
-    setBlockLoading(true);
-    setError("");
-
-    try {
-      const { data: existing, error: checkError } = await supabase
-        .from("bookings")
-        .select("id, status")
-        .eq("date", blockDate)
-        .eq("slot", blockSlot)
-        .in("status", ["Pending", "Approved", "Blocked"]);
-
-      if (checkError) throw checkError;
-
-      if (existing && existing.length > 0) {
-        setError("This date + slot already has a booking or block.");
-        return;
-      }
-
-      const { error: insertError } = await supabase
-        .from("bookings")
-        .insert([
-          {
-            name: "Manual Block",
-            phone: "-",
-            date: blockDate,
-            slot: blockSlot,
-            players: null,
-            status: "Blocked",
-          },
-        ]);
-
-      if (insertError) throw insertError;
-
-      setBlockDate("");
-      setBlockSlot("");
-      await loadBookings();
-    } catch (err) {
-      console.error(err);
-      setError("Could not block this slot.");
-    } finally {
-      setBlockLoading(false);
-    }
-  };
-
-  const unblockSlot = async (id) => {
-    if (!supabase) return;
-
-    if (!window.confirm("Unblock this slot?")) return;
 
     const { error } = await supabase
       .from("bookings")
-      .delete()
-      .eq("id", id)
-      .eq("status", "Blocked");
+      .update({ status })
+      .eq("id", id);
 
     if (error) {
-      setError("Could not unblock slot.");
+      setError("Could not update booking.");
       return;
     }
 
-    await loadBookings();
+    loadBookings();
   };
 
   const deleteBooking = async (id) => {
@@ -1369,21 +1197,20 @@ function Admin() {
   const stats = {
     total: bookings.length,
     pending: bookings.filter((b) => b.status === "Pending").length,
-    blocked: bookings.filter((b) => b.status === "Blocked").length,
     approved: bookings.filter((b) => b.status === "Approved").length,
     rejected: bookings.filter((b) => b.status === "Rejected").length,
   };
 
   if (!loggedIn) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0D0917] px-4 text-white">
-        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#130D20] p-6 sm:p-8">
+      <div className="flex min-h-screen items-center justify-center bg-[#080706] px-4 text-white">
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0c0907] p-6 sm:p-8">
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#DFFF00] text-black">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500 text-black">
               <ShieldCheck size={28} />
             </div>
 
-            <div className="text-xs font-bold uppercase tracking-[0.3em] text-[#DFFF00]">
+            <div className="text-xs font-bold uppercase tracking-[0.3em] text-orange-400">
               RADHE BOX CRICKET
             </div>
 
@@ -1417,7 +1244,7 @@ function Admin() {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-[#DFFF00] py-4 font-black text-black hover:bg-[#DFFF00]"
+              className="w-full rounded-xl bg-orange-500 py-4 font-black text-black hover:bg-orange-400"
             >
               LOGIN
             </button>
@@ -1438,11 +1265,11 @@ function Admin() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#0D0917] text-white">
-      <header className="border-b border-white/10 bg-[#130D20]">
+    <div className="min-h-screen overflow-x-hidden bg-[#080706] text-white">
+      <header className="border-b border-white/10 bg-[#0c0907]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5 lg:px-8">
           <div>
-            <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#DFFF00] sm:text-xs sm:tracking-[0.3em]">
+            <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
               RADHE BOX CRICKET
             </div>
 
@@ -1461,7 +1288,7 @@ function Admin() {
 
             <button
               onClick={logout}
-              className="rounded-xl bg-[#DFFF00] px-3 py-2 text-xs font-black text-black sm:px-4 sm:py-3 sm:text-sm"
+              className="rounded-xl bg-orange-500 px-3 py-2 text-xs font-black text-black sm:px-4 sm:py-3 sm:text-sm"
             >
               Logout
             </button>
@@ -1470,10 +1297,11 @@ function Admin() {
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-5 sm:py-8 lg:px-8">
-        <div className="radhe-facility-grid grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           <AdminStat title="Total" value={stats.total} />
-          <AdminStat title="Pending Requests" value={stats.pending} />
-          <AdminStat title="Blocked Slots" value={stats.blocked} />
+          <AdminStat title="Pending" value={stats.pending} />
+          <AdminStat title="Approved" value={stats.approved} />
+          <AdminStat title="Rejected" value={stats.rejected} />
         </div>
 
         {error && (
@@ -1482,59 +1310,14 @@ function Admin() {
           </div>
         )}
 
-        <section className="mt-8 rounded-3xl border border-[#DFFF00]/20 bg-[#130D20] p-5 sm:p-6">
-          <div className="mb-5">
-            <div className="text-xs font-black uppercase tracking-[0.25em] text-[#DFFF00]">
-              MANUAL SLOT CONTROL
-            </div>
-            <h2 className="mt-2 text-2xl font-black uppercase">
-              Block a Slot 🔒
-            </h2>
-            <p className="mt-1 text-sm text-white/40">
-              Offline booking, maintenance, owner reservation — block any slot yourself.
-            </p>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-[1fr_1.3fr_auto]">
-            <input
-              type="date"
-              min={new Date().toISOString().split("T")[0]}
-              value={blockDate}
-              onChange={(e) => setBlockDate(e.target.value)}
-              className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white outline-none focus:border-[#DFFF00]/50"
-            />
-
-            <select
-              value={blockSlot}
-              onChange={(e) => setBlockSlot(e.target.value)}
-              className="rounded-xl border border-white/10 bg-[#130D20] px-4 py-3 text-white outline-none focus:border-[#DFFF00]/50"
-            >
-              <option value="">Select slot</option>
-              {SLOT_OPTIONS.map((slot) => (
-                <option key={slot.value} value={slot.value}>
-                  {slot.value} — ₹{slot.price}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={blockSlotManually}
-              disabled={blockLoading}
-              className="rounded-xl bg-[#DFFF00] px-5 py-3 font-black text-black transition hover:bg-[#DFFF00] disabled:opacity-50"
-            >
-              {blockLoading ? "BLOCKING..." : "BLOCK SLOT 🔒"}
-            </button>
-          </div>
-        </section>
-
         <div className="mt-6 flex flex-wrap gap-2">
-          {["All", "Pending", "Blocked"].map((item) => (
+          {["All", "Pending", "Approved", "Rejected"].map((item) => (
             <button
               key={item}
               onClick={() => setFilter(item)}
               className={`rounded-xl px-4 py-3 text-sm font-bold ${
                 filter === item
-                  ? "bg-[#DFFF00] text-black"
+                  ? "bg-orange-500 text-black"
                   : "border border-white/10 text-white/60"
               }`}
             >
@@ -1543,7 +1326,7 @@ function Admin() {
           ))}
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#130D20]">
+        <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#0c0907]">
           {loading ? (
             <div className="p-10 text-center text-white/40">
               Loading bookings...
@@ -1603,53 +1386,32 @@ function Admin() {
                       </td>
 
                       <td className="px-5 py-5">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-bold ${
-                            booking.status === "Blocked"
-                              ? "bg-[#DFFF00]/10 text-[#DFFF00]"
-                              : booking.status === "Pending"
-                              ? "bg-yellow-400/10 text-yellow-300"
-                              : "bg-white/5 text-white/40"
-                          }`}
-                        >
+                        <span className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-400">
                           {booking.status}
                         </span>
                       </td>
 
                       <td className="px-5 py-5">
                         <div className="flex gap-2">
-                          {booking.status === "Pending" && (
+                          {booking.status !== "Approved" && (
                             <button
-                              onClick={async () => {
-                                const confirmed = window.confirm(
-                                  `Block ${booking.slot} on ${formatDate(booking.date)}?`
-                                );
-                                if (!confirmed) return;
-
-                                const { error } = await supabase
-                                  .from("bookings")
-                                  .update({ status: "Blocked" })
-                                  .eq("id", booking.id);
-
-                                if (error) {
-                                  setError("Could not block booking slot.");
-                                  return;
-                                }
-
-                                await loadBookings();
-                              }}
-                              className="rounded-lg bg-[#DFFF00] px-3 py-2 text-xs font-black text-black"
+                              onClick={() =>
+                                updateStatus(booking.id, "Approved")
+                              }
+                              className="rounded-lg bg-orange-500 px-3 py-2 text-xs font-black text-black"
                             >
-                              BLOCK SLOT 🔒
+                              <Check size={14} />
                             </button>
                           )}
 
-                          {booking.status === "Blocked" && (
+                          {booking.status !== "Rejected" && (
                             <button
-                              onClick={() => unblockSlot(booking.id)}
-                              className="rounded-lg border border-[#DFFF00]/20 px-3 py-2 text-xs font-bold text-[#DFFF00]"
+                              onClick={() =>
+                                updateStatus(booking.id, "Rejected")
+                              }
+                              className="rounded-lg border border-red-400/20 px-3 py-2 text-xs text-red-300"
                             >
-                              UNBLOCK
+                              Reject
                             </button>
                           )}
 
@@ -1668,11 +1430,6 @@ function Admin() {
             </div>
           )}
         </div>
-
-        <div className="mt-6 rounded-2xl border border-white/5 bg-white/[0.02] p-5 text-sm leading-6 text-white/35">
-          <strong className="text-white/60">How it works:</strong> Customer requests stay Pending. You decide when to block the slot.
-          Blocked slots disappear from the public booking dropdown. Unblock/Delete makes the slot available again.
-        </div>
       </main>
     </div>
   );
@@ -1680,12 +1437,12 @@ function Admin() {
 
 function AdminStat({ title, value }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#130D20] p-5 sm:p-6">
+    <div className="rounded-2xl border border-white/10 bg-[#0c0907] p-5 sm:p-6">
       <div className="text-[10px] font-bold uppercase tracking-widest text-white/30 sm:text-xs">
         {title}
       </div>
 
-      <div className="mt-2 text-3xl font-black text-[#DFFF00] sm:text-4xl">
+      <div className="mt-2 text-3xl font-black text-orange-500 sm:text-4xl">
         {value}
       </div>
     </div>
